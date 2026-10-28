@@ -14,6 +14,10 @@ namespace SpiritPrototype
         public int AllyHealth { get; private set; }
         public int EnemyHealth { get; private set; }
         public int EnemyMaxHealth { get; }
+        public int EnemyMaxStability { get; }
+        public bool Capturable { get; }
+        private readonly int enemyAttack;
+        private bool staggerPending;
         public int ActiveMaxHealth { get; private set; }
         public int AttackDamage { get; private set; }
         public int AttackRupture { get; private set; }
@@ -38,8 +42,13 @@ namespace SpiritPrototype
 
         public PrototypeBattle(int health, int enemyMaxHealth, int seals,
             int allyMaxHealth = 20, int attackDamage = 5, int attackRupture = 2, int containRupture = 5,
-            PrototypeRelicLine line = null, bool isBrasa = true)
+            PrototypeRelicLine line = null, bool isBrasa = true,
+            int enemyDamage = 3, bool capturable = true, int enemyMaxStability = 10)
         {
+            enemyAttack = Math.Max(1, enemyDamage);
+            Capturable = capturable;
+            EnemyMaxStability = Math.Max(1, enemyMaxStability);
+            Stability = EnemyMaxStability;
             relics = line == null ? new PrototypeRelicLine(new PrototypeRelic[0]) : line.Snapshot();
             brasa = isBrasa;
             SetAlly(health, allyMaxHealth, attackDamage, attackRupture, containRupture);
@@ -53,6 +62,7 @@ namespace SpiritPrototype
             if (Outcome != PrototypeOutcome.Ongoing) return false;
             if (action == PrototypeAction.Capture)
             {
+                if (!Capturable) { Message = "Este jefe no puede ser capturado."; return false; }
                 if (!Exposed) { Message = "Rompe la estabilidad antes de vincular."; return false; }
                 if (Seals == 0) { Message = "No quedan sellos. Puedes derrotar al espiritu."; return false; }
                 if (!teamHasRoom) { Message = "Equipo lleno. En esta prueba caben cuatro espiritus."; return false; }
@@ -79,7 +89,11 @@ namespace SpiritPrototype
                 if (Stability > 0)
                 {
                     Stability = Math.Max(0, Stability - rupture);
-                    if (Stability == 0) exposedThroughRound = Round + 1;
+                    if (Stability == 0)
+                    {
+                        exposedThroughRound = Round + 1;
+                        if (!Capturable) staggerPending = true;
+                    }
                 }
                 Message = "Causas " + damage + " de dano y " + rupture + " de ruptura.";
                 if (EnemyHealth == 0)
@@ -124,13 +138,15 @@ namespace SpiritPrototype
 
         private void ResolveEnemy(bool defend)
         {
-            int incoming = defend ? 2 : 3;
+            int incoming = staggerPending ? 0 : defend ? (enemyAttack + 1) / 2 : enemyAttack;
+            if (staggerPending) Message += " Rompes su guardia: pierde esta respuesta.";
+            else Message += " El enemigo causa " + incoming + " de dano.";
+            staggerPending = false;
             AllyHealth = Math.Max(0, AllyHealth - incoming);
-            Message += " El enemigo causa " + incoming + " de dano.";
             if (AllyHealth == 0) Outcome = PrototypeOutcome.Defeat;
             if (Stability == 0 && Round >= exposedThroughRound)
             {
-                Stability = MaxStability / 2;
+                Stability = (EnemyMaxStability + 1) / 2;
                 Message += " Recupera estabilidad.";
             }
             Round++;

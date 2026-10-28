@@ -9807,6 +9807,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.PrototypeEncounterController
   player: {fileID: 1145789831}
   allyPortrait: {fileID: 21300000, guid: 7be5ddf5eae5ca140834f0bdccc719ac, type: 3}
+  relicPortraits:
+  - {fileID: 21300000, guid: 08ef4eae5450d20448a7c662c9e42371, type: 3}
+  - {fileID: 21300000, guid: c5f3c1add675a8446aad5a4d0f0d6063, type: 3}
+  - {fileID: 21300000, guid: e8326ec938085334184e1ce37d70aae3, type: 3}
   encounters:
   - {fileID: 535663736}
   - {fileID: 911086083}

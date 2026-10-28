@@ -23,6 +23,10 @@ namespace SpiritPrototype
         private bool teamOpen, forcedReplacement, movementBlocked;
         private bool relicOpen;
         private PrototypeRelicLine relics = new PrototypeRelicLine();
+        private bool externalPause;
+        public bool CanExplore => battle == null && !teamOpen && !relicOpen && !externalPause;
+        public event System.Action<SpiritEncounter, bool> EncounterResolved;
+        public event System.Action TrialRestarted;
         private int lastActionFrame = -1;
         private bool wasMovementEnabled;
         private GUIStyle label, title, button, small;
@@ -41,6 +45,7 @@ namespace SpiritPrototype
 
         private void Update()
         {
+            if (externalPause) return;
             if (relicOpen)
             {
                 if (Pressed(7) || Pressed(9)) CloseRelics();
@@ -80,7 +85,8 @@ namespace SpiritPrototype
             target = encounter;
             PrototypeTeamMember member = team[activeIndex];
             battle = new PrototypeBattle(member.Health, target.maxHealth, seals,
-                member.MaxHealth, member.Damage, member.Rupture, member.Containment, relics, member.IsBrasa);
+                member.MaxHealth, member.Damage, member.Rupture, member.Containment, relics, member.IsBrasa,
+                target.attackDamage, target.capturable, target.maxStability);
             BlockMovement();
         }
 
@@ -119,11 +125,11 @@ namespace SpiritPrototype
         }
 
         private void OpenTeam(bool forced)
-        { teamOpen = true; forcedReplacement = forced; BlockMovement(); }
+        { if (externalPause) return; teamOpen = true; forcedReplacement = forced; BlockMovement(); }
 
         private void OpenRelics()
         {
-            if (battle != null || teamOpen) return;
+            if (battle != null || teamOpen || externalPause) return;
             relicOpen = true; BlockMovement();
         }
 
@@ -161,25 +167,53 @@ namespace SpiritPrototype
             if (battle == null || battle.Outcome == PrototypeOutcome.Ongoing) return;
             if (battle.Outcome == PrototypeOutcome.Defeat)
             {
-                seals = 6;
-                relics = new PrototypeRelicLine();
-                team.Clear(); team.Add(PrototypeTeamMember.Create("Ascua", 20)); activeIndex = 0;
-                foreach (SpiritEncounter encounter in encounters)
-                    if (encounter != null) encounter.gameObject.SetActive(true);
-                var body = player.GetComponent<Rigidbody2D>();
-                body.position = startPosition; body.linearVelocity = Vector2.zero;
-                player.transform.position = startPosition;
+                RestartTrial();
+                return;
             }
-            else
-            {
-                if (battle.Outcome == PrototypeOutcome.Captured)
-                    team.Add(PrototypeTeamMember.Create(target.species, battle.EnemyHealth));
-                target.gameObject.SetActive(false);
-            }
+            SpiritEncounter resolved = target;
+            bool captured = battle.Outcome == PrototypeOutcome.Captured;
+            if (captured) team.Add(PrototypeTeamMember.Create(target.species, battle.EnemyHealth));
+            target.gameObject.SetActive(false);
             battle = null; target = null; nearby = null;
             teamOpen = false; forcedReplacement = false;
             relicOpen = false;
             UnblockMovement();
+            EncounterResolved?.Invoke(resolved, captured);
+        }
+
+        public void RestartTrial()
+        {
+            seals = 6; relics = new PrototypeRelicLine();
+            team.Clear(); team.Add(PrototypeTeamMember.Create("Ascua", 20)); activeIndex = 0;
+            foreach (SpiritEncounter encounter in encounters)
+                if (encounter != null) encounter.gameObject.SetActive(true);
+            battle = null; target = null; nearby = null;
+            teamOpen = false; relicOpen = false; forcedReplacement = false; externalPause = false;
+            WarpPlayer(startPosition);
+            UnblockMovement();
+            TrialRestarted?.Invoke();
+        }
+
+        public void GrantSeals(int amount) { seals += Mathf.Max(0, amount); }
+
+        public void RestoreTeam()
+        {
+            if (!CanExplore) return;
+            foreach (var member in team) member.Health = member.MaxHealth;
+        }
+
+        public void SetExternalPause(bool pause)
+        {
+            externalPause = pause;
+            if (pause) BlockMovement();
+            else if (battle == null && !teamOpen && !relicOpen) UnblockMovement();
+        }
+
+        public void WarpPlayer(Vector3 position)
+        {
+            var body = player.GetComponent<Rigidbody2D>();
+            body.position = position; body.linearVelocity = Vector2.zero;
+            player.transform.position = position;
         }
 
         private void OnDisable()
@@ -257,8 +291,8 @@ namespace SpiritPrototype
             Portrait(target.portrait, new Rect(645, 78, 180, 170));
             GUI.Label(new Rect(70, 255, 400, 30), member.Species + "  " + battle.AllyHealth + "/" + member.MaxHealth, label);
             GUI.Label(new Rect(565, 255, 365, 30), target.species + "  " + battle.EnemyHealth + "/" + battle.EnemyMaxHealth, label);
-            GUI.Label(new Rect(565, 288, 365, 28), battle.Exposed ? "EXPUESTO - Vinculo " + battle.CaptureChance + "%"
-                : "Estabilidad " + battle.Stability + "/10", label);
+            GUI.Label(new Rect(565, 288, 365, 28), battle.Exposed ? (battle.Capturable ? "EXPUESTO - Vinculo " + battle.CaptureChance + "%" : "GUARDIA ROTA")
+                : "Estabilidad " + battle.Stability + "/" + battle.EnemyMaxStability, label);
             GUI.Label(new Rect(70, 288, 390, 28), "Sellos " + battle.Seals + "     Equipo " + team.Count + "/4", label);
             if (battle.Outcome == PrototypeOutcome.Ongoing && GUI.Button(new Rect(70, 320, 280, 30), "5 - Cambiar espiritu", small)) OpenTeam(false);
             GUI.Label(new Rect(30, 355, 900, 43), battle.Message, small);
@@ -273,8 +307,8 @@ namespace SpiritPrototype
             if (GUI.Button(new Rect(260, 486, 210, 80), "2 Contener\n1 dano / " + member.Containment + " ruptura", button)) Act(PrototypeAction.Contain);
             if (GUI.Button(new Rect(490, 486, 210, 80), "3 Defender\nReduce el golpe", button)) Act(PrototypeAction.Defend);
             bool previous = GUI.enabled;
-            GUI.enabled = previous && battle.Exposed && battle.Seals > 0 && team.Count < 4;
-            if (GUI.Button(new Rect(720, 486, 210, 80), "4 Vincular\nConsume un sello", button)) Act(PrototypeAction.Capture);
+            GUI.enabled = previous && battle.Capturable && battle.Exposed && battle.Seals > 0 && team.Count < 4;
+            if (GUI.Button(new Rect(720, 486, 210, 80), battle.Capturable ? "4 Vincular\nConsume un sello" : "Jefe\nNo capturable", button)) Act(PrototypeAction.Capture);
             GUI.enabled = previous;
             GUI.Label(new Rect(30, 572, 900, 25), "Proximo ataque: " + battle.PredictedAttackTrace, small);
         }
