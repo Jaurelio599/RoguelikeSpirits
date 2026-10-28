@@ -177,16 +177,26 @@ namespace SpiritPrototype
                     if (GUI.Button(new Rect(290, 365, 380, 65), "Comenzar otra expedicion", button)) controller.RestartTrial();
                     return;
                 }
-                GUI.DrawTexture(new Rect(12, 118, 936, 105), panel);
-                GUI.Label(new Rect(28, 127, 900, 30), "Sala " + (room + 1) + "/4  -  " + names[room], text);
-                GUI.Label(new Rect(28, 160, 900, 55), notice, text);
+                // One slim objective row, below the player status bar.
+                var compact = new GUIStyle(text) { fontSize = 14, wordWrap = false };
+                GUI.DrawTexture(new Rect(12, 48, 936, 32), panel);
+                GUI.Label(new Rect(24, 53, 410, 23), "Sala " + (room + 1) + "/4 - " + names[room], compact);
+                int remaining = 0;
+                foreach (var enemy in CurrentEnemies())
+                    if (enemy != null && enemy.gameObject.activeSelf) remaining++;
+                string objective = room == 2 ? sanctuaryUsed ? "Equipo recuperado. Ve a la puerta norte."
+                    : "E junto al santuario para recuperar al equipo."
+                    : remaining == 0 ? "Salida abierta: E junto a la puerta norte."
+                    : room == 3 ? "Derrota al jefe. Rompe su guardia para frenarlo."
+                    : "Encuentros pendientes: " + remaining + "/2";
+                GUI.Label(new Rect(450, 53, 480, 23), objective, compact);
                 string prompt = room == 2 && Near(sanctuary, 1.65f) && !sanctuaryUsed
                     ? "E - Recuperar al equipo" : Near(door, 1.65f)
                     ? Cleared() ? "E - Avanzar a la siguiente sala" : "Salida bloqueada" : "";
                 if (prompt.Length > 0)
                 {
-                    GUI.DrawTexture(new Rect(180, 530, 600, 58), panel);
-                    GUI.Label(new Rect(205, 545, 560, 30), prompt, text);
+                    GUI.DrawTexture(new Rect(240, 506, 480, 32), panel);
+                    GUI.Label(new Rect(252, 510, 456, 25), prompt, text);
                 }
             }
             finally { GUI.matrix = old; }

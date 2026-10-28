@@ -421,6 +421,7 @@ Transform:
   - {fileID: 1022179001}
   - {fileID: 1794939706}
   - {fileID: 1356802727}
+  - {fileID: 876844913}
   m_Father: {fileID: 1236824624}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &42984972
@@ -4403,6 +4404,9 @@ MonoBehaviour:
   species: Velo
   portrait: {fileID: 21300000, guid: 23e20ea4312c32c43bd5573901d81d76, type: 3}
   maxHealth: 18
+  attackDamage: 3
+  maxStability: 10
+  capturable: 1
 --- !u!1 &565468142
 GameObject:
   m_ObjectHideFlags: 0
@@ -6544,6 +6548,116 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &876844910
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 876844913}
+  - component: {fileID: 876844912}
+  - component: {fileID: 876844911}
+  m_Layer: 0
+  m_Name: Guardian del Umbral
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &876844911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 876844910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbca64e1cd3f81243bd8db798a951d58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritEncounter
+  species: Guardian del Umbral
+  portrait: {fileID: 21300000, guid: f5890bdf49a0f2f48b9660aeed2ba2d2, type: 3}
+  maxHealth: 32
+  attackDamage: 4
+  maxStability: 20
+  capturable: 0
+--- !u!212 &876844912
+SpriteRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 876844910}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: e161e14a5fabd7f4fa5915d87bd75058, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 10
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: f5890bdf49a0f2f48b9660aeed2ba2d2, type: 3}
+  m_Color: {r: 1, g: 0.65, b: 0.65, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 0.9166667, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+--- !u!4 &876844913
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 876844910}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.2518182, y: 1.2825, z: 1.35}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 39033120}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &911017715
 GameObject:
   m_ObjectHideFlags: 0
@@ -6789,6 +6903,9 @@ MonoBehaviour:
   species: Raicero
   portrait: {fileID: 21300000, guid: f5890bdf49a0f2f48b9660aeed2ba2d2, type: 3}
   maxHealth: 18
+  attackDamage: 3
+  maxStability: 10
+  capturable: 1
 --- !u!1 &920402253
 GameObject:
   m_ObjectHideFlags: 0
@@ -7809,6 +7926,9 @@ MonoBehaviour:
   species: Campanilla
   portrait: {fileID: 21300000, guid: 5fa90779199a22440a43c2eef0d21ba4, type: 3}
   maxHealth: 18
+  attackDamage: 3
+  maxStability: 10
+  capturable: 1
 --- !u!1 &1028029566
 GameObject:
   m_ObjectHideFlags: 0
@@ -9767,6 +9887,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1236824624}
   - component: {fileID: 1236824625}
+  - component: {fileID: 1236824626}
   m_Layer: 0
   m_Name: Habitacion temporal
   m_TagString: Untagged
@@ -9817,7 +9938,38 @@ MonoBehaviour:
   - {fileID: 1022179003}
   - {fileID: 1794939708}
   - {fileID: 1356802729}
+  - {fileID: 876844911}
   encounterDistance: 1.4
+--- !u!114 &1236824626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1236824623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3db552a779b923748b285d2bd3e5d24f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.PrototypeExpeditionController
+  controller: {fileID: 1236824625}
+  player: {fileID: 1145789831}
+  door: {fileID: 62230027}
+  sanctuary: {fileID: 146601565}
+  allEncounters:
+  - {fileID: 535663736}
+  - {fileID: 911086083}
+  - {fileID: 1022179003}
+  - {fileID: 1794939708}
+  - {fileID: 1356802729}
+  - {fileID: 876844911}
+  firstRoom:
+  - {fileID: 535663736}
+  - {fileID: 1794939708}
+  secondRoom:
+  - {fileID: 911086083}
+  - {fileID: 1356802729}
+  boss: {fileID: 876844911}
 --- !u!1 &1241116905
 GameObject:
   m_ObjectHideFlags: 0
@@ -10929,6 +11081,9 @@ MonoBehaviour:
   species: Farol
   portrait: {fileID: 21300000, guid: d1fb4d60b8cd11a489aa72c32481aa10, type: 3}
   maxHealth: 18
+  attackDamage: 3
+  maxStability: 10
+  capturable: 1
 --- !u!1 &1359862162
 GameObject:
   m_ObjectHideFlags: 0
@@ -13916,6 +14071,9 @@ MonoBehaviour:
   species: Luto
   portrait: {fileID: 21300000, guid: 5aab402bd843b6741a90d5f3dbc5526f, type: 3}
   maxHealth: 18
+  attackDamage: 3
+  maxStability: 10
+  capturable: 1
 --- !u!1 &1796181009
 GameObject:
   m_ObjectHideFlags: 0

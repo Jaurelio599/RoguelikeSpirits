@@ -264,19 +264,32 @@ namespace SpiritPrototype
         private void DrawExploration()
         {
             PrototypeTeamMember member = team[activeIndex];
-            GUI.DrawTexture(new Rect(12, 12, 936, 100), background);
-            GUI.Label(new Rect(28, 20, 900, 26), member.Species + "  " + member.Health + "/" + member.MaxHealth + "     Sellos  " + seals +
-                "     Equipo  " + team.Count + "/4", label);
-            var names = new List<string>();
-            foreach (var entry in team) names.Add(entry.Species + " " + entry.Health + "/" + entry.MaxHealth);
-            GUI.Label(new Rect(28, 49, 900, 25), string.Join("  /  ", names), small);
-            if (GUI.Button(new Rect(28, 78, 220, 28), "Tab - Ver equipo", small)) OpenTeam(false);
-            if (GUI.Button(new Rect(300, 78, 240, 28), "R - Ordenar reliquias", small)) OpenRelics();
-            DrawRelicStrip(440);
+            // Compact border HUD. Expanded team details live only in the Tab menu.
+            GUI.DrawTexture(new Rect(12, 6, 936, 38), background);
+            GUI.Label(new Rect(24, 12, 570, 27), member.Species + "  " + member.Health + "/" + member.MaxHealth +
+                "   |   Sellos " + seals + "   |   Equipo " + team.Count + "/4", small);
+            if (GUI.Button(new Rect(620, 11, 135, 27), "Tab - Equipo", small)) OpenTeam(false);
+            if (GUI.Button(new Rect(770, 11, 160, 27), "R - Reliquias", small)) OpenRelics();
+            DrawExplorationRelics();
             if (nearby != null)
             {
-                GUI.DrawTexture(new Rect(180, 536, 600, 50), background);
-                GUI.Label(new Rect(198, 548, 570, 30), "E  -  Encontrar a " + nearby.species, label);
+                GUI.DrawTexture(new Rect(240, 506, 480, 32), background);
+                GUI.Label(new Rect(252, 510, 456, 25), "E - Encontrar a " + nearby.species, small);
+            }
+        }
+
+        private void DrawExplorationRelics()
+        {
+            const float xStart = 280, y = 550, width = 72, gap = 8;
+            var number = new GUIStyle(small) { fontSize = 12 };
+            for (int i = 0; i < 5; i++)
+            {
+                float x = xStart + i * (width + gap);
+                string name = i < relics.Count ? PrototypeRelicLine.Name(relics[i]) : "Espacio vacio";
+                if (GUI.Button(new Rect(x, y, width, 44), new GUIContent("", name))) OpenRelics();
+                GUI.Label(new Rect(x + 5, y + 3, 18, 18), (i + 1).ToString(), number);
+                if (i < relics.Count) RelicPortrait(relics[i], new Rect(x + 24, y + 6, 30, 30));
+                else GUI.Label(new Rect(x + 31, y + 12, 25, 22), "-", number);
             }
         }
 
