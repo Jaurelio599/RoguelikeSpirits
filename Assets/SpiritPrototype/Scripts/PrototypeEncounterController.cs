@@ -11,6 +11,7 @@ namespace SpiritPrototype
     {
         [SerializeField] private PlayerMovement player;
         [SerializeField] private Sprite allyPortrait;
+        [SerializeField] private Sprite[] relicPortraits = new Sprite[3];
         [SerializeField] private SpiritEncounter[] encounters;
         [SerializeField, Min(.5f)] private float encounterDistance = 1.4f;
         private readonly List<PrototypeTeamMember> team = new List<PrototypeTeamMember>();
@@ -20,6 +21,8 @@ namespace SpiritPrototype
         private Vector3 startPosition;
         private int activeIndex, seals = 6;
         private bool teamOpen, forcedReplacement, movementBlocked;
+        private bool relicOpen;
+        private PrototypeRelicLine relics = new PrototypeRelicLine();
         private int lastActionFrame = -1;
         private bool wasMovementEnabled;
         private GUIStyle label, title, button, small;
@@ -38,6 +41,11 @@ namespace SpiritPrototype
 
         private void Update()
         {
+            if (relicOpen)
+            {
+                if (Pressed(7) || Pressed(9)) CloseRelics();
+                return;
+            }
             if (teamOpen)
             {
                 for (int i = 1; i <= 4; i++)
@@ -55,6 +63,7 @@ namespace SpiritPrototype
                 return;
             }
             if (Pressed(6)) { OpenTeam(false); return; }
+            if (Pressed(9)) { OpenRelics(); return; }
             nearby = null;
             float best = encounterDistance * encounterDistance;
             foreach (SpiritEncounter encounter in encounters)
@@ -71,7 +80,7 @@ namespace SpiritPrototype
             target = encounter;
             PrototypeTeamMember member = team[activeIndex];
             battle = new PrototypeBattle(member.Health, target.maxHealth, seals,
-                member.MaxHealth, member.Damage, member.Rupture, member.Containment);
+                member.MaxHealth, member.Damage, member.Rupture, member.Containment, relics, member.IsBrasa);
             BlockMovement();
         }
 
@@ -80,6 +89,8 @@ namespace SpiritPrototype
             if (lastActionFrame == Time.frameCount || battle == null) return;
             if (!battle.Act(action, team.Count < 4, Random.value)) return;
             lastActionFrame = Time.frameCount;
+            if (action == PrototypeAction.Attack && battle.LastCalculation.Length > 0)
+                Debug.Log("Reliquias: " + battle.LastCalculation);
             SyncAfterTurn();
         }
 
@@ -110,6 +121,15 @@ namespace SpiritPrototype
         private void OpenTeam(bool forced)
         { teamOpen = true; forcedReplacement = forced; BlockMovement(); }
 
+        private void OpenRelics()
+        {
+            if (battle != null || teamOpen) return;
+            relicOpen = true; BlockMovement();
+        }
+
+        private void CloseRelics()
+        { relicOpen = false; if (battle == null && !teamOpen) UnblockMovement(); }
+
         private void CloseTeam()
         {
             if (forcedReplacement) return;
@@ -125,8 +145,8 @@ namespace SpiritPrototype
             if (battle != null)
             {
                 bool accepted = forcedReplacement
-                    ? battle.ReplaceFallenAlly(member.Health, member.MaxHealth, member.Damage, member.Rupture, member.Containment)
-                    : battle.SwitchAlly(member.Health, member.MaxHealth, member.Damage, member.Rupture, member.Containment);
+                    ? battle.ReplaceFallenAlly(member.Health, member.MaxHealth, member.Damage, member.Rupture, member.Containment, member.IsBrasa)
+                    : battle.SwitchAlly(member.Health, member.MaxHealth, member.Damage, member.Rupture, member.Containment, member.IsBrasa);
                 if (!accepted) return;
             }
             activeIndex = index;
@@ -142,6 +162,7 @@ namespace SpiritPrototype
             if (battle.Outcome == PrototypeOutcome.Defeat)
             {
                 seals = 6;
+                relics = new PrototypeRelicLine();
                 team.Clear(); team.Add(PrototypeTeamMember.Create("Ascua", 20)); activeIndex = 0;
                 foreach (SpiritEncounter encounter in encounters)
                     if (encounter != null) encounter.gameObject.SetActive(true);
@@ -157,6 +178,7 @@ namespace SpiritPrototype
             }
             battle = null; target = null; nearby = null;
             teamOpen = false; forcedReplacement = false;
+            relicOpen = false;
             UnblockMovement();
         }
 
@@ -195,11 +217,12 @@ namespace SpiritPrototype
                 (Screen.height - 600 * scale) / 2, 0), Quaternion.identity, new Vector3(scale, scale, 1));
             try
             {
-                GUI.enabled = previousEnabled && !teamOpen;
+                GUI.enabled = previousEnabled && !teamOpen && !relicOpen;
                 if (battle == null) DrawExploration();
                 else DrawBattle();
                 GUI.enabled = previousEnabled;
                 if (teamOpen) DrawTeam();
+                if (relicOpen) DrawRelics();
             }
             finally { GUI.matrix = previousMatrix; GUI.enabled = previousEnabled; }
         }
@@ -214,6 +237,8 @@ namespace SpiritPrototype
             foreach (var entry in team) names.Add(entry.Species + " " + entry.Health + "/" + entry.MaxHealth);
             GUI.Label(new Rect(28, 49, 900, 25), string.Join("  /  ", names), small);
             if (GUI.Button(new Rect(28, 78, 220, 28), "Tab - Ver equipo", small)) OpenTeam(false);
+            if (GUI.Button(new Rect(300, 78, 240, 28), "R - Ordenar reliquias", small)) OpenRelics();
+            DrawRelicStrip(440);
             if (nearby != null)
             {
                 GUI.DrawTexture(new Rect(180, 536, 600, 50), background);
@@ -228,28 +253,75 @@ namespace SpiritPrototype
             GUI.Label(new Rect(30, 20, 740, 42), "Encuentro con " + target.species, title);
             GUI.Label(new Rect(770, 28, 160, 30), "Ronda " + battle.Round, label);
             portraits.TryGetValue(member.Species, out Sprite portrait);
-            Portrait(portrait, new Rect(115, 110, 210, 210));
-            Portrait(target.portrait, new Rect(635, 110, 210, 210));
-            GUI.Label(new Rect(70, 330, 400, 30), member.Species + "  " + battle.AllyHealth + "/" + member.MaxHealth, label);
-            GUI.Label(new Rect(565, 330, 365, 30), target.species + "  " + battle.EnemyHealth + "/" + battle.EnemyMaxHealth, label);
-            GUI.Label(new Rect(565, 363, 365, 28), battle.Exposed ? "EXPUESTO - Vinculo " + battle.CaptureChance + "%"
+            Portrait(portrait, new Rect(135, 78, 180, 170));
+            Portrait(target.portrait, new Rect(645, 78, 180, 170));
+            GUI.Label(new Rect(70, 255, 400, 30), member.Species + "  " + battle.AllyHealth + "/" + member.MaxHealth, label);
+            GUI.Label(new Rect(565, 255, 365, 30), target.species + "  " + battle.EnemyHealth + "/" + battle.EnemyMaxHealth, label);
+            GUI.Label(new Rect(565, 288, 365, 28), battle.Exposed ? "EXPUESTO - Vinculo " + battle.CaptureChance + "%"
                 : "Estabilidad " + battle.Stability + "/10", label);
-            GUI.Label(new Rect(70, 363, 390, 28), "Sellos " + battle.Seals + "     Equipo " + team.Count + "/4", label);
-            if (battle.Outcome == PrototypeOutcome.Ongoing && GUI.Button(new Rect(70, 393, 280, 30), "5 - Cambiar espiritu", small)) OpenTeam(false);
-            GUI.Label(new Rect(30, 426, 900, 54), battle.Message, small);
+            GUI.Label(new Rect(70, 288, 390, 28), "Sellos " + battle.Seals + "     Equipo " + team.Count + "/4", label);
+            if (battle.Outcome == PrototypeOutcome.Ongoing && GUI.Button(new Rect(70, 320, 280, 30), "5 - Cambiar espiritu", small)) OpenTeam(false);
+            GUI.Label(new Rect(30, 355, 900, 43), battle.Message, small);
+            DrawRelicStrip(400);
             if (battle.Outcome != PrototypeOutcome.Ongoing)
             {
                 string text = battle.Outcome == PrototypeOutcome.Defeat ? "Enter - Reiniciar prueba" : "Enter - Volver a explorar";
                 if (GUI.Button(new Rect(230, 500, 500, 66), text, button)) Finish();
                 return;
             }
-            if (GUI.Button(new Rect(30, 486, 210, 80), "1 Atacar\n" + member.Damage + " dano / " + member.Rupture + " ruptura", button)) Act(PrototypeAction.Attack);
+            if (GUI.Button(new Rect(30, 486, 210, 80), "1 Atacar\n" + battle.PredictedAttackDamage + " dano / " + member.Rupture + " ruptura", button)) Act(PrototypeAction.Attack);
             if (GUI.Button(new Rect(260, 486, 210, 80), "2 Contener\n1 dano / " + member.Containment + " ruptura", button)) Act(PrototypeAction.Contain);
             if (GUI.Button(new Rect(490, 486, 210, 80), "3 Defender\nReduce el golpe", button)) Act(PrototypeAction.Defend);
             bool previous = GUI.enabled;
             GUI.enabled = previous && battle.Exposed && battle.Seals > 0 && team.Count < 4;
             if (GUI.Button(new Rect(720, 486, 210, 80), "4 Vincular\nConsume un sello", button)) Act(PrototypeAction.Capture);
             GUI.enabled = previous;
+            GUI.Label(new Rect(30, 572, 900, 25), "Proximo ataque: " + battle.PredictedAttackTrace, small);
+        }
+
+        private void RelicPortrait(PrototypeRelic relic, Rect rect)
+        {
+            int index = (int)relic;
+            if (relicPortraits != null && index < relicPortraits.Length) Portrait(relicPortraits[index], rect);
+        }
+
+        private void DrawRelicStrip(float y)
+        {
+            var tiny = new GUIStyle(small) { fontSize = 14 };
+            for (int i = 0; i < 5; i++)
+            {
+                float x = 30 + i * 182;
+                GUI.DrawTexture(new Rect(x, y, 172, 72), background);
+                GUI.Box(new Rect(x, y, 172, 72), GUIContent.none);
+                GUI.Label(new Rect(x + 6, y + 4, 24, 23), (i + 1).ToString(), tiny);
+                if (i >= relics.Count)
+                { GUI.Label(new Rect(x + 45, y + 28, 110, 25), "Vacio", tiny); continue; }
+                RelicPortrait(relics[i], new Rect(x + 28, y + 2, 43, 43));
+                GUI.Label(new Rect(x + 7, y + 46, 164, 24), PrototypeRelicLine.Name(relics[i]), tiny);
+            }
+        }
+
+        private void DrawRelics()
+        {
+            GUI.DrawTexture(new Rect(40, 70, 880, 480), background);
+            GUI.Label(new Rect(65, 90, 820, 45), "Ordena tus reliquias", title);
+            GUI.Label(new Rect(65, 140, 820, 45), "Se calculan de izquierda a derecha. La fila se bloquea al combatir.", small);
+            for (int i = 0; i < relics.Count; i++)
+            {
+                float y = 200 + i * 88;
+                RelicPortrait(relics[i], new Rect(65, y, 55, 55));
+                GUI.Label(new Rect(135, y, 540, 27), (i + 1) + ". " + PrototypeRelicLine.Name(relics[i]), label);
+                GUI.Label(new Rect(135, y + 30, 555, 50), relics.Description(i), small);
+                bool previous = GUI.enabled;
+                GUI.enabled = previous && i > 0;
+                if (GUI.Button(new Rect(715, y + 10, 65, 45), "<", button)) { relics.Move(i, -1); GUI.enabled = previous; break; }
+                GUI.enabled = previous && i + 1 < relics.Count;
+                if (GUI.Button(new Rect(795, y + 10, 65, 45), ">", button)) { relics.Move(i, 1); GUI.enabled = previous; break; }
+                GUI.enabled = previous;
+            }
+            relics.Damage(10, true, 4, 20, out string example);
+            GUI.Label(new Rect(65, 473, 820, 26), "Ejemplo Brasa contra enemigo herido: " + example, small);
+            if (GUI.Button(new Rect(600, 510, 260, 30), "Esc / R - Volver", button)) CloseRelics();
         }
 
         private void DrawTeam()
@@ -296,10 +368,11 @@ namespace SpiritPrototype
                 case 6: return k.tabKey.wasPressedThisFrame;
                 case 7: return k.escapeKey.wasPressedThisFrame;
                 case 8: return k.digit5Key.wasPressedThisFrame;
+                case 9: return k.rKey.wasPressedThisFrame;
             }
 #elif ENABLE_LEGACY_INPUT_MANAGER
             KeyCode[] keys = {KeyCode.E, KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4,
-                KeyCode.Return, KeyCode.Tab, KeyCode.Escape, KeyCode.Alpha5};
+                KeyCode.Return, KeyCode.Tab, KeyCode.Escape, KeyCode.Alpha5, KeyCode.R};
             return Input.GetKeyDown(keys[key]);
 #endif
             return false;

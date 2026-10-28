@@ -11,6 +11,7 @@ namespace SpiritPrototype
         public int Rupture { get; }
         public int Containment { get; }
         public bool Alive => Health > 0;
+        public bool IsBrasa => Species == "Ascua" || Species == "Farol";
 
         private PrototypeTeamMember(string species, int maxHealth, int damage, int rupture, int containment, int health)
         {
