@@ -14,6 +14,10 @@ namespace SpiritPrototype
         public int AllyHealth { get; private set; }
         public int EnemyHealth { get; private set; }
         public int EnemyMaxHealth { get; }
+        public int ActiveMaxHealth { get; private set; }
+        public int AttackDamage { get; private set; }
+        public int AttackRupture { get; private set; }
+        public int ContainRupture { get; private set; }
         public int Stability { get; private set; } = MaxStability;
         public int Seals { get; private set; }
         public int Round { get; private set; } = 1;
@@ -24,9 +28,10 @@ namespace SpiritPrototype
         public bool Exposed => Stability == 0 && Round <= exposedThroughRound;
         public int CaptureChance => Math.Min(95, 60 + (EnemyHealth * 2 <= EnemyMaxHealth ? 15 : 0));
 
-        public PrototypeBattle(int health, int enemyMaxHealth, int seals)
+        public PrototypeBattle(int health, int enemyMaxHealth, int seals,
+            int allyMaxHealth = 20, int attackDamage = 5, int attackRupture = 2, int containRupture = 5)
         {
-            AllyHealth = Math.Max(1, Math.Min(AllyMaxHealth, health));
+            SetAlly(health, allyMaxHealth, attackDamage, attackRupture, containRupture);
             EnemyMaxHealth = Math.Max(1, enemyMaxHealth);
             EnemyHealth = EnemyMaxHealth;
             Seals = Math.Max(0, seals);
@@ -49,11 +54,11 @@ namespace SpiritPrototype
                 }
                 Message = "El vinculo fallo. Se consumio un sello.";
             }
-            else if (action == PrototypeAction.Defend) Message = "Ascua se protege.";
+            else if (action == PrototypeAction.Defend) Message = "Tu espiritu se protege.";
             else
             {
-                int damage = action == PrototypeAction.Attack ? 5 : 1;
-                int rupture = action == PrototypeAction.Attack ? 2 : 5;
+                int damage = action == PrototypeAction.Attack ? AttackDamage : 1;
+                int rupture = action == PrototypeAction.Attack ? AttackRupture : ContainRupture;
                 EnemyHealth = Math.Max(0, EnemyHealth - damage);
                 if (Stability > 0)
                 {
@@ -68,17 +73,49 @@ namespace SpiritPrototype
                     return true;
                 }
             }
-            int incoming = action == PrototypeAction.Defend ? 2 : 3;
+            ResolveEnemy(action == PrototypeAction.Defend);
+            return true;
+        }
+
+        public bool SwitchAlly(int health, int maxHealth, int damage, int rupture, int contain)
+        {
+            if (Outcome != PrototypeOutcome.Ongoing || health <= 0) return false;
+            SetAlly(health, maxHealth, damage, rupture, contain);
+            Message = "Cambias de espiritu.";
+            ResolveEnemy(false);
+            return true;
+        }
+
+        public bool ReplaceFallenAlly(int health, int maxHealth, int damage, int rupture, int contain)
+        {
+            if (Outcome != PrototypeOutcome.Defeat || health <= 0) return false;
+            SetAlly(health, maxHealth, damage, rupture, contain);
+            Outcome = PrototypeOutcome.Ongoing;
+            Message = "Tu aliado entra al combate. Elige una accion.";
+            return true;
+        }
+
+        private void SetAlly(int health, int maxHealth, int damage, int rupture, int contain)
+        {
+            ActiveMaxHealth = Math.Max(1, maxHealth);
+            AllyHealth = Math.Max(1, Math.Min(ActiveMaxHealth, health));
+            AttackDamage = Math.Max(1, damage);
+            AttackRupture = Math.Max(0, rupture);
+            ContainRupture = Math.Max(0, contain);
+        }
+
+        private void ResolveEnemy(bool defend)
+        {
+            int incoming = defend ? 2 : 3;
             AllyHealth = Math.Max(0, AllyHealth - incoming);
             Message += " El enemigo causa " + incoming + " de dano.";
-            if (AllyHealth == 0) { Outcome = PrototypeOutcome.Defeat; return true; }
+            if (AllyHealth == 0) Outcome = PrototypeOutcome.Defeat;
             if (Stability == 0 && Round >= exposedThroughRound)
             {
                 Stability = MaxStability / 2;
                 Message += " Recupera estabilidad.";
             }
             Round++;
-            return true;
         }
     }
 }
