@@ -19,6 +19,7 @@ namespace SpiritPrototype
         private PrototypeBattle battle;
         private SpiritEncounter target, nearby;
         private Vector3 startPosition;
+        private int essence;
         private int activeIndex, seals = 6;
         private bool teamOpen, forcedReplacement, movementBlocked;
         private bool relicOpen;
@@ -69,6 +70,9 @@ namespace SpiritPrototype
                     go.name = definition.id; actor = go.GetComponent<SpiritEncounter>(); list.Add(actor);
                 }
                 actor.ApplyDefinition(definition);
+                var idle = actor.GetComponent<SpiritIdleAnimator>();
+                if (idle == null) idle = actor.gameObject.AddComponent<SpiritIdleAnimator>();
+                idle.Configure(definition);
             }
             encounters = list.ToArray();
         }
@@ -126,6 +130,7 @@ namespace SpiritPrototype
         {
             if (!debugTestEncounter) EncounterBegan?.Invoke(encounter);
             target = encounter;
+            foreach (var ally in team) ally.Shield = 0;
             PrototypeTeamMember member = team[activeIndex];
             battle = new PrototypeBattle(member.Health, target.maxHealth, seals,
                 member.MaxHealth, member.Damage, member.Rupture, member.Containment, relics, member.IsBrasa,
@@ -146,6 +151,7 @@ namespace SpiritPrototype
         private void SyncAfterTurn()
         {
             team[activeIndex].Health = battle.AllyHealth;
+            team[activeIndex].Shield = battle.AllyShield;
             seals = battle.Seals;
             if (battle.Outcome == PrototypeOutcome.Defeat)
                 foreach (var member in team)
@@ -193,9 +199,10 @@ namespace SpiritPrototype
             PrototypeTeamMember member = team[index];
             if (battle != null)
             {
+                team[activeIndex].Shield = battle.AllyShield;
                 bool accepted = forcedReplacement
-                    ? battle.ReplaceFallenAlly(member.Health, member.MaxHealth, member.Damage, member.Rupture, member.Containment, member.IsBrasa)
-                    : battle.SwitchAlly(member.Health, member.MaxHealth, member.Damage, member.Rupture, member.Containment, member.IsBrasa);
+                    ? battle.ReplaceFallenAlly(member.Health, member.MaxHealth, member.Damage, member.Rupture, member.Containment, member.IsBrasa, member.Shield)
+                    : battle.SwitchAlly(member.Health, member.MaxHealth, member.Damage, member.Rupture, member.Containment, member.IsBrasa, member.Shield);
                 if (!accepted) return;
             }
             activeIndex = index;
@@ -229,6 +236,8 @@ namespace SpiritPrototype
                 else RestartTrial();
                 return;
             }
+            essence = (int)System.Math.Min(1000000000L, (long)essence + battle.EarnedEssence);
+            foreach (var ally in team) ally.Shield = 0;
             SpiritEncounter resolved = target;
             bool captured = battle.Outcome == PrototypeOutcome.Captured;
             if (captured) team.Add(PrototypeTeamMember.Create(target.species, battle.EnemyHealth));
@@ -244,7 +253,7 @@ namespace SpiritPrototype
         public void RestartTrial()
         {
             CleanupDebugOpponent();
-            seals = 6; relics = new PrototypeRelicLine();
+            essence = 0; seals = 6; relics = new PrototypeRelicLine();
             team.Clear(); team.Add(PrototypeTeamMember.Create("Ascua", 20)); activeIndex = 0;
             foreach (SpiritEncounter encounter in encounters)
                 if (encounter != null) encounter.gameObject.SetActive(true);
@@ -259,6 +268,7 @@ namespace SpiritPrototype
         {
             state.team.Clear();
             foreach (var member in team) state.team.Add(new PrototypeMemberSave {species = member.Species, health = member.Health});
+            state.essence = essence;
             state.activeIndex = activeIndex; state.seals = seals;
             state.relics.Clear();
             for (int i = 0; i < relics.Count; i++) state.relics.Add((int)relics[i]);
@@ -277,6 +287,7 @@ namespace SpiritPrototype
                 member.Health = System.Math.Min(saved.health, member.MaxHealth); // Keep zero; clamp old saves after balance changes.
                 team.Add(member);
             }
+            essence = state.essence;
             activeIndex = state.activeIndex; seals = state.seals;
             var values = new List<PrototypeRelic>();
             foreach (int value in state.relics) values.Add((PrototypeRelic)value);
@@ -440,7 +451,7 @@ namespace SpiritPrototype
             // Compact border HUD. Expanded team details live only in the Tab menu.
             GUI.DrawTexture(new Rect(12, 6, 936, 38), background);
             GUI.Label(new Rect(24, 12, 570, 27), member.DisplayName + "  " + member.Health + "/" + member.MaxHealth +
-                "   |   Sellos " + seals + "   |   Equipo " + team.Count + "/4", small);
+                "   |   Sellos " + seals + "   |   Equipo " + team.Count + "/4 | Esencia " + essence, small);
             if (GUI.Button(new Rect(620, 11, 135, 27), "Tab - Equipo", small)) OpenTeam(false);
             if (GUI.Button(new Rect(770, 11, 160, 27), "R - Reliquias", small)) OpenRelics();
             DrawExplorationRelics();
@@ -473,14 +484,15 @@ namespace SpiritPrototype
             GUI.Label(new Rect(30, 20, 740, 42), (debugTestEncounter ? "DEBUG contra " : "Encuentro con ") + PrototypeSpeciesCatalog.Name(target.species), title);
             GUI.Label(new Rect(770, 28, 160, 30), "Ronda " + battle.Round, label);
             portraits.TryGetValue(member.Species, out Sprite portrait);
-            if (PrototypeContent.Spirit(member.Species).sprite != null) portrait = PrototypeContent.Spirit(member.Species).sprite;
+            if (PrototypeContent.Spirit(member.Species).FrameAt(Time.unscaledTime) != null) portrait = PrototypeContent.Spirit(member.Species).FrameAt(Time.unscaledTime);
             Portrait(portrait, new Rect(135, 78, 180, 170));
-            Portrait(target.portrait, new Rect(645, 78, 180, 170));
-            GUI.Label(new Rect(70, 255, 400, 30), member.DisplayName + "  " + battle.AllyHealth + "/" + member.MaxHealth, label);
+            Portrait(PrototypeContent.Spirit(target.species).FrameAt(Time.unscaledTime) ?? target.portrait, new Rect(645, 78, 180, 170));
+            GUI.Label(new Rect(70, 255, 400, 30), member.DisplayName + "  " + battle.AllyHealth + "/" + member.MaxHealth + " | Escudo " + battle.AllyShield, label);
             GUI.Label(new Rect(565, 255, 365, 30), PrototypeSpeciesCatalog.Name(target.species) + "  " + battle.EnemyHealth + "/" + battle.EnemyMaxHealth, label);
             GUI.Label(new Rect(565, 288, 365, 28), battle.Exposed ? (battle.Capturable ? "EXPUESTO - Vinculo " + battle.CaptureChance + "%" : "GUARDIA ROTA")
                 : "Estabilidad " + battle.Stability + "/" + battle.EnemyMaxStability, label);
-            GUI.Label(new Rect(70, 288, 390, 28), "Sellos " + battle.Seals + "     Equipo " + team.Count + "/4", label);
+            if (battle.Burning) GUI.Label(new Rect(370, 320, 250, 28), "Quemadura activa", small);
+            GUI.Label(new Rect(70, 288, 390, 28), "Sellos " + battle.Seals + "  Equipo " + team.Count + "/4  Esencia " + essence, label);
             if (battle.Outcome == PrototypeOutcome.Ongoing && GUI.Button(new Rect(70, 320, 280, 30), "5 - Cambiar espiritu", small)) OpenTeam(false);
             GUI.Label(new Rect(30, 355, 900, 43), battle.Message, small);
             DrawRelicStrip(400);
@@ -576,7 +588,7 @@ namespace SpiritPrototype
                 PrototypeTeamMember member = team[i];
                 float y = 186 + i * 70;
                 portraits.TryGetValue(member.Species, out Sprite portrait);
-            if (PrototypeContent.Spirit(member.Species).sprite != null) portrait = PrototypeContent.Spirit(member.Species).sprite;
+            if (PrototypeContent.Spirit(member.Species).FrameAt(Time.unscaledTime) != null) portrait = PrototypeContent.Spirit(member.Species).FrameAt(Time.unscaledTime);
                 Portrait(portrait, new Rect(125, y, 58, 58));
                 GUI.Label(new Rect(198, y, 320, 28), member.DisplayName + "  " + member.Health + "/" + member.MaxHealth, label);
                 GUI.Label(new Rect(198, y + 29, 350, 25), "Dano " + member.Damage + " | Contencion " + member.Containment, small);

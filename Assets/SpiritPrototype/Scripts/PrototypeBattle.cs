@@ -12,6 +12,10 @@ namespace SpiritPrototype
         public const int AllyMaxHealth = 20;
         public const int MaxStability = 10;
         public int AllyHealth { get; private set; }
+        public int AllyShield { get; private set; }
+        public int EarnedEssence { get; private set; }
+        private int burnThroughRound;
+        public bool Burning => EnemyHealth > 0 && Round <= burnThroughRound;
         public int EnemyHealth { get; private set; }
         public int EnemyMaxHealth { get; }
         public int EnemyMaxStability { get; }
@@ -39,7 +43,7 @@ namespace SpiritPrototype
 
         public int PredictedContainment => ContainRupture + relics.ContainmentBonus;
         public bool Exposed => Stability == 0 && Round <= exposedThroughRound;
-        public int CaptureChance => Math.Min(95, 60 + (EnemyHealth * 2 <= EnemyMaxHealth ? 15 : 0));
+        public int CaptureChance => Math.Min(95, Math.Max(10, 60 + (EnemyHealth * 2 <= EnemyMaxHealth ? 15 : 0) + (Burning ? 10 : 0) + relics.Sum(RelicEffectKind.CaptureBonus)));
 
         public PrototypeBattle(int health, int enemyMaxHealth, int seals,
             int allyMaxHealth = 20, int attackDamage = 5, int attackRupture = 2, int containRupture = 5,
@@ -56,6 +60,7 @@ namespace SpiritPrototype
             EnemyMaxHealth = Math.Max(1, enemyMaxHealth);
             EnemyHealth = EnemyMaxHealth;
             Seals = Math.Max(0, seals);
+            if (relics.Count > 0 && relics.Rule(0).effect == RelicEffectKind.OpeningShield) AllyShield = relics.IntegerAmountAt(0);
         }
 
         public bool Act(PrototypeAction action, bool teamHasRoom, double captureRoll)
@@ -87,42 +92,48 @@ namespace SpiritPrototype
                 }
                 int rupture = action == PrototypeAction.Attack ? AttackRupture : PredictedContainment;
                 EnemyHealth = Math.Max(0, EnemyHealth - damage);
-                if (Stability > 0)
-                {
-                    Stability = Math.Max(0, Stability - rupture);
-                    if (Stability == 0)
-                    {
-                        exposedThroughRound = Round + 1;
-                        if (!Capturable) staggerPending = true;
-                    }
-                }
+                Rupture(rupture);
                 Message = "Causas " + damage + " de dano y " + rupture + " de ruptura.";
                 if (EnemyHealth == 0)
                 {
                     Outcome = PrototypeOutcome.Victory;
+                    EarnedEssence = relics.Sum(RelicEffectKind.VictoryEssence);
                     Message += " Espiritu derrotado.";
                     return true;
+                }
+            }
+            if (action == PrototypeAction.Attack && brasa && EnemyHealth > 0)
+            {
+                for (int i = 0; i < relics.Count; i++)
+                {
+                    var rule = relics.Rule(i);
+                    if (!rule.Matches(brasa, EnemyHealth, EnemyMaxHealth)) continue;
+                    if (rule.effect == RelicEffectKind.BurnOnAttack) { burnThroughRound = Round + 2; Message += " Aplica Quemadura."; }
+                    else if (rule.effect == RelicEffectKind.RuptureBurnedAfterAttack && Burning)
+                    { int extra = relics.IntegerAmountAt(i); Rupture(extra); Message += " Campana: " + extra + " ruptura."; }
                 }
             }
             ResolveEnemy(action == PrototypeAction.Defend);
             return true;
         }
 
-        public bool SwitchAlly(int health, int maxHealth, int damage, int rupture, int contain, bool isBrasa = true)
+        public bool SwitchAlly(int health, int maxHealth, int damage, int rupture, int contain, bool isBrasa = true, int shield = 0)
         {
             if (Outcome != PrototypeOutcome.Ongoing || health <= 0) return false;
             SetAlly(health, maxHealth, damage, rupture, contain);
             brasa = isBrasa;
+            AllyShield = Math.Min(1000000, Math.Max(0, shield) + relics.Sum(RelicEffectKind.SwitchShield));
             Message = "Cambias de espiritu.";
             ResolveEnemy(false);
             return true;
         }
 
-        public bool ReplaceFallenAlly(int health, int maxHealth, int damage, int rupture, int contain, bool isBrasa = true)
+        public bool ReplaceFallenAlly(int health, int maxHealth, int damage, int rupture, int contain, bool isBrasa = true, int shield = 0)
         {
             if (Outcome != PrototypeOutcome.Defeat || health <= 0) return false;
             SetAlly(health, maxHealth, damage, rupture, contain);
             brasa = isBrasa;
+            AllyShield = Math.Max(0, shield);
             Outcome = PrototypeOutcome.Ongoing;
             Message = "Tu aliado entra al combate. Elige una accion.";
             return true;
@@ -133,7 +144,7 @@ namespace SpiritPrototype
         {
             if (Outcome != PrototypeOutcome.Ongoing || capture && (!Capturable || !teamHasRoom)) return false;
             if (capture) { EnemyHealth = Math.Max(1, EnemyHealth); Outcome = PrototypeOutcome.Captured; }
-            else { EnemyHealth = 0; Outcome = PrototypeOutcome.Victory; }
+            else { EnemyHealth = 0; Outcome = PrototypeOutcome.Victory; EarnedEssence = relics.Sum(RelicEffectKind.VictoryEssence); }
             Message = capture ? "DEBUG: captura inmediata, sin gastar sello." : "DEBUG: victoria inmediata.";
             return true;
         }
@@ -164,14 +175,35 @@ namespace SpiritPrototype
             ContainRupture = Math.Max(0, contain);
         }
 
+        private void Rupture(int amount)
+        {
+            if (Stability <= 0) return;
+            Stability = Math.Max(0, Stability - amount);
+            if (Stability == 0) { exposedThroughRound = Round + 1; if (!Capturable) staggerPending = true; }
+        }
         private void ResolveEnemy(bool defend)
         {
             int incoming = staggerPending ? 0 : relics.IncomingDamage(defend ? (enemyAttack + 1) / 2 : enemyAttack);
             if (staggerPending) Message += " Rompes su guardia: pierde esta respuesta.";
             else Message += " El enemigo causa " + incoming + " de dano.";
             staggerPending = false;
-            AllyHealth = Math.Max(0, AllyHealth - incoming);
+            int absorbed = Math.Min(AllyShield, incoming); AllyShield -= absorbed;
+            AllyHealth = Math.Max(0, AllyHealth - (incoming - absorbed));
+            if (absorbed > 0) Message += " El escudo absorbe " + absorbed + ".";
             if (AllyHealth == 0) Outcome = PrototypeOutcome.Defeat;
+            if (Outcome != PrototypeOutcome.Defeat)
+            {
+                if (Burning)
+                {
+                    EnemyHealth = Math.Max(0, EnemyHealth - 2); Message += " Quemadura: 2 dano.";
+                    if (EnemyHealth == 0) { Outcome = PrototypeOutcome.Victory; Message += " Enemigo derrotado por Quemadura."; }
+                }
+                if (relics.Count > 0 && relics.Rule(relics.Count - 1).effect == RelicEffectKind.EndRoundHeal)
+                {
+                    int heal = Math.Min(relics.IntegerAmountAt(relics.Count - 1), ActiveMaxHealth - AllyHealth);
+                    AllyHealth += heal; if (heal > 0) Message += " Farol cura " + heal + ".";
+                }
+            }
             if (Stability == 0 && Round >= exposedThroughRound)
             {
                 Stability = (EnemyMaxStability + 1) / 2;

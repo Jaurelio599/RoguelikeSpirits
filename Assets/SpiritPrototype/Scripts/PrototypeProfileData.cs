@@ -23,6 +23,7 @@ namespace SpiritPrototype
     {
         public bool generatedFloor;
         public PrototypeFloorPlan floor;
+        public int essence;
         public int room, victories, captures, seals = 6, activeIndex;
         public float playerX = -2, playerY = -2;
         public bool sanctuaryUsed, rewarded;
@@ -92,7 +93,7 @@ namespace SpiritPrototype
                 if (entry == null || !PrototypeSpeciesCatalog.Known(entry.species) || !ids.Add(entry.species) ||
                     entry.seen < 0 || entry.captures < 0 || entry.bestRoom < 0 || entry.bestRoom > 5 || entry.completions < 0 || entry.bestFloor < 0 || entry.bestFloor > 1 || entry.bestFloorRoom < 0 || entry.bestFloorRoom > 5) return false;
             if (run == null) return true;
-            if (run.room < 0 || run.room > (run.generatedFloor ? 4 : 3) || run.seals < 0 || run.victories < 0 || run.captures < 0 ||
+            if (run.room < 0 || run.room > (run.generatedFloor ? 4 : 3) || run.seals < 0 || run.essence < 0 || run.victories < 0 || run.captures < 0 ||
                 run.team == null || run.team.Count < 1 || run.team.Count > 4 ||
                 run.activeIndex < 0 || run.activeIndex >= run.team.Count || run.team[run.activeIndex] == null ||
                 run.team[run.activeIndex].health <= 0 || run.relics == null || run.relics.Count > 5 ||

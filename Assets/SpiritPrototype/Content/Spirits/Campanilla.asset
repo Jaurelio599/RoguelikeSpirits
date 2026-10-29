@@ -16,6 +16,12 @@ MonoBehaviour:
   displayName: Campanilla
   sprite: {fileID: 21300000, guid: 5fa90779199a22440a43c2eef0d21ba4, type: 3}
   tint: {r: 1, g: 1, b: 1, a: 1}
+  idleFrames:
+  - {fileID: 21300000, guid: 242ee7bbec36f6d48bedc80b6ce14131, type: 3}
+  - {fileID: 21300000, guid: 6793518660cd8e149b26e87a40577513, type: 3}
+  - {fileID: 21300000, guid: 780e65f4399bcb1449f3e38d8708e9b9, type: 3}
+  - {fileID: 21300000, guid: 47caa77947b66264e8dd9f4ae540363b, type: 3}
+  idleFramesPerSecond: 5
   rarity: Por definir
   mapSize: 0.9
   canBeAlly: 1

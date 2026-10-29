@@ -16,6 +16,12 @@ MonoBehaviour:
   displayName: Velo
   sprite: {fileID: 21300000, guid: 23e20ea4312c32c43bd5573901d81d76, type: 3}
   tint: {r: 1, g: 1, b: 1, a: 1}
+  idleFrames:
+  - {fileID: 21300000, guid: 0c1fe7ed6ea5d664cbce615232ec0e45, type: 3}
+  - {fileID: 21300000, guid: 67c7c15450d077142b3e2eab960d4c7d, type: 3}
+  - {fileID: 21300000, guid: 36004fba6b516ef47abb93d492143b9d, type: 3}
+  - {fileID: 21300000, guid: bea0a3f33dae5f64da0c2186510c7312, type: 3}
+  idleFramesPerSecond: 5
   rarity: Por definir
   mapSize: 0.9
   canBeAlly: 1

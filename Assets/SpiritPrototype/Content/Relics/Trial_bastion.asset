@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1aa4ec32311c2346b036af930ac4c0b, type: 3}
+  m_Name: Trial_bastion
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.RelicDefinition
+  id: 10
+  displayName: Bastion antiguo
+  prototypeKey: prototype.bastion
+  icon: {fileID: 21300000, guid: d1fbcbfb878fa6a46904cce88c32cb34, type: 3}
+  rarity: Por definir
+  inChests: 1
+  effect: 8
+  condition: 0
+  amount: 4
+  targetRelicId: 0
+  amplifyAnyAdditive: 0
+  flavorText: 

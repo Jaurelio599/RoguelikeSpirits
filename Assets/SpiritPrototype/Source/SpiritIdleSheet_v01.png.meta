@@ -1,0 +1,520 @@
+fileFormatVersion: 2
+guid: 22bae6bdf73725342917890baea50a20
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2928046057656106373
+    second: SpiritIdleSheet_v01_0
+  - first:
+      213: -5716496804780684361
+    second: SpiritIdleSheet_v01_1
+  - first:
+      213: 2649409518265716883
+    second: SpiritIdleSheet_v01_2
+  - first:
+      213: -6844111452099723143
+    second: SpiritIdleSheet_v01_3
+  - first:
+      213: -2858057107532095270
+    second: SpiritIdleSheet_v01_4
+  - first:
+      213: -5261421058174202130
+    second: SpiritIdleSheet_v01_5
+  - first:
+      213: -2313634382556117894
+    second: SpiritIdleSheet_v01_6
+  - first:
+      213: 5758207112575356306
+    second: SpiritIdleSheet_v01_7
+  - first:
+      213: -1726102660623486385
+    second: SpiritIdleSheet_v01_8
+  - first:
+      213: -3949766524034253826
+    second: SpiritIdleSheet_v01_9
+  - first:
+      213: 6713079751094556091
+    second: SpiritIdleSheet_v01_10
+  - first:
+      213: 8326937271041457371
+    second: SpiritIdleSheet_v01_11
+  - first:
+      213: 2264953438996786243
+    second: SpiritIdleSheet_v01_12
+  - first:
+      213: -46958364398241470
+    second: SpiritIdleSheet_v01_13
+  - first:
+      213: -8628314985060305737
+    second: SpiritIdleSheet_v01_14
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 999
+        width: 267
+        height: 525
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b72cc6fbf9d7d57d0800000000000000
+      internalID: -2928046057656106373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_1
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 1264
+        width: 211
+        height: 252
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bb446f717ceaa0b0800000000000000
+      internalID: -5716496804780684361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_2
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 1259
+        width: 199
+        height: 264
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39054c07be794c420800000000000000
+      internalID: 2649409518265716883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_3
+      rect:
+        serializedVersion: 2
+        x: 758
+        y: 1258
+        width: 235
+        height: 242
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 970c96e55e4d401a0800000000000000
+      internalID: -6844111452099723143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_4
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 996
+        width: 235
+        height: 249
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad0e4cd04342658d0800000000000000
+      internalID: -2858057107532095270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_5
+      rect:
+        serializedVersion: 2
+        x: 502
+        y: 1121
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eee44cd7c6dabf6b0800000000000000
+      internalID: -5261421058174202130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_6
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 553
+        width: 497
+        height: 698
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a74cc9789c154efd0800000000000000
+      internalID: -2313634382556117894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 595
+        width: 6
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29d8e205cd249ef40800000000000000
+      internalID: 5758207112575356306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_8
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 285
+        width: 507
+        height: 715
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f423ea386c6ab08e0800000000000000
+      internalID: -1726102660623486385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_9
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 283
+        width: 243
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efb753de54c9f29c0800000000000000
+      internalID: -3949766524034253826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_10
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 282
+        width: 234
+        height: 254
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb5dbd85776a92d50800000000000000
+      internalID: 6713079751094556091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_11
+      rect:
+        serializedVersion: 2
+        x: 776
+        y: 283
+        width: 236
+        height: 263
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bdcf26b74593f8370800000000000000
+      internalID: 8326937271041457371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 263
+        height: 278
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34ce33c072bbe6f10800000000000000
+      internalID: 2264953438996786243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_13
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 0
+        width: 236
+        height: 277
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2493fcacd9b295ff0800000000000000
+      internalID: -46958364398241470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpiritIdleSheet_v01_14
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 0
+        width: 481
+        height: 277
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b4fc416c31124880800000000000000
+      internalID: -8628314985060305737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SpiritIdleSheet_v01_0: -2928046057656106373
+      SpiritIdleSheet_v01_1: -5716496804780684361
+      SpiritIdleSheet_v01_10: 6713079751094556091
+      SpiritIdleSheet_v01_11: 8326937271041457371
+      SpiritIdleSheet_v01_12: 2264953438996786243
+      SpiritIdleSheet_v01_13: -46958364398241470
+      SpiritIdleSheet_v01_14: -8628314985060305737
+      SpiritIdleSheet_v01_2: 2649409518265716883
+      SpiritIdleSheet_v01_3: -6844111452099723143
+      SpiritIdleSheet_v01_4: -2858057107532095270
+      SpiritIdleSheet_v01_5: -5261421058174202130
+      SpiritIdleSheet_v01_6: -2313634382556117894
+      SpiritIdleSheet_v01_7: 5758207112575356306
+      SpiritIdleSheet_v01_8: -1726102660623486385
+      SpiritIdleSheet_v01_9: -3949766524034253826
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

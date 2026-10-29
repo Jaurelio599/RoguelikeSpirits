@@ -16,6 +16,12 @@ MonoBehaviour:
   displayName: Farol
   sprite: {fileID: 21300000, guid: d1fb4d60b8cd11a489aa72c32481aa10, type: 3}
   tint: {r: 1, g: 1, b: 1, a: 1}
+  idleFrames:
+  - {fileID: 21300000, guid: 5f728f2eaf11fec43bfceb4c46c21107, type: 3}
+  - {fileID: 21300000, guid: cbd668fe70682e443b9ab865299ed75e, type: 3}
+  - {fileID: 21300000, guid: 2083cd9a98cdc134bac036b47c7d526f, type: 3}
+  - {fileID: 21300000, guid: 50cfdbfd5d387e840b980152f505400a, type: 3}
+  idleFramesPerSecond: 5
   rarity: Por definir
   mapSize: 0.9
   canBeAlly: 1

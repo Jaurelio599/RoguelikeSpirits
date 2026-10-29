@@ -15,6 +15,10 @@ namespace SpiritPrototype
         private Rigidbody2D body;
         private SpriteRenderer visual;
         private Vector2 direction;
+        private Vector2 facing = new Vector2(0, -1);
+        public bool IsMoving => enabled && direction != Vector2.zero;
+        public PlayerFacing Facing => facing.y > 0 ? PlayerFacing.North : facing.y < 0 ? PlayerFacing.South
+            : facing.x < 0 ? PlayerFacing.West : PlayerFacing.East;
 
         private void Awake()
         {
@@ -43,6 +47,7 @@ namespace SpiritPrototype
                 direction = new Vector2(Mathf.Sign(raw.x), 0f);
             else direction = new Vector2(0f, Mathf.Sign(raw.y));
 
+            if (direction != Vector2.zero) facing = direction;
             if (direction.y > 0f && north != null) visual.sprite = north;
             else if (direction != Vector2.zero && south != null) visual.sprite = south;
         }

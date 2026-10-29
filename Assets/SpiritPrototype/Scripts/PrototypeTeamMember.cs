@@ -8,6 +8,7 @@ namespace SpiritPrototype
         public string DisplayName => PrototypeSpeciesCatalog.Name(Species);
         public int MaxHealth { get; }
         public int Health { get; set; }
+        public int Shield { get; set; }
         public int Damage { get; }
         public int Rupture { get; }
         public int Containment { get; }

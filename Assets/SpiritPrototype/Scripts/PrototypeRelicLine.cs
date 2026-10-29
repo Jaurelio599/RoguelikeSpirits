@@ -19,7 +19,23 @@ namespace SpiritPrototype
             if (slots.Count > 5 || new HashSet<PrototypeRelic>(slots).Count != slots.Count) throw new ArgumentException("La fila admite cinco reliquias diferentes.");
             foreach (var id in slots) if (!PrototypeContent.KnownRelic((int)id)) throw new ArgumentException("Reliquia desconocida: " + (int)id);
         }
-        private PrototypeRelicRule Rule(int index) => frozen != null ? frozen[(int)slots[index]] : PrototypeContent.Relic((int)slots[index]).Rule;
+        public PrototypeRelicRule Rule(int index) => frozen != null ? frozen[(int)slots[index]] : PrototypeContent.Relic((int)slots[index]).Rule;
+        public double AmountAt(int index)
+        {
+            var rule = Rule(index); double amount = rule.amount;
+            if (index > 0)
+            {
+                var left = Rule(index - 1);
+                if (left.effect == RelicEffectKind.AmplifyNextAddition && RelicDefinition.IsAdditive(rule.effect) && (left.anyAdditive || left.targetId == rule.id)) amount *= left.amount;
+            }
+            return amount;
+        }
+        public int IntegerAmountAt(int index) => (int)Math.Min(1000000, Math.Floor(AmountAt(index)));
+        public int Sum(RelicEffectKind kind)
+        {
+            long total = 0; for (int i = 0; i < Count; i++) if (Rule(i).effect == kind) total += IntegerAmountAt(i);
+            return (int)Math.Min(1000000, total);
+        }
         public bool Contains(PrototypeRelic value) => slots.Contains(value);
         public bool Acquire(PrototypeRelic value, int replaceIndex = -1)
         {
@@ -28,16 +44,8 @@ namespace SpiritPrototype
             if (replaceIndex < 0 || replaceIndex >= Count) return false;
             slots[replaceIndex] = value; return true;
         }
-        public int ContainmentBonus
-        {
-            get { int bonus = 0; for (int i = 0; i < Count; i++) { var r = Rule(i); if (r.effect == RelicEffectKind.AddContainment) bonus += (int)r.amount; } return bonus; }
-        }
-        public int IncomingDamage(int damage)
-        {
-            int reduction = 0;
-            for (int i = 0; i < Count; i++) { var r = Rule(i); if (r.effect == RelicEffectKind.ReduceIncomingDamage) reduction += (int)r.amount; }
-            return Math.Max(1, damage - reduction);
-        }
+        public int ContainmentBonus => Sum(RelicEffectKind.AddContainment);
+        public int IncomingDamage(int damage) => Math.Max(1, damage - Sum(RelicEffectKind.ReduceIncomingDamage));
         public PrototypeRelicLine Snapshot()
         {
             var copy = new PrototypeRelicLine(slots) {frozen = new Dictionary<int, PrototypeRelicRule>()};
@@ -58,8 +66,7 @@ namespace SpiritPrototype
                 var rule = Rule(i); if (!rule.Matches(brasa, enemyHealth, enemyMaxHealth)) continue;
                 if (rule.effect == RelicEffectKind.AddAttack)
                 {
-                    double bonus = rule.amount;
-                    if (i > 0) { var previous = Rule(i - 1); if (previous.effect == RelicEffectKind.AmplifyNextAddition && previous.targetId == rule.id) bonus *= previous.amount; }
+                    double bonus = AmountAt(i);
                     value += bonus; log.Append(" > " + rule.name + " +" + bonus);
                 }
                 else if (rule.effect == RelicEffectKind.MultiplyAttack) { value *= rule.amount; log.Append(" > " + rule.name + " x" + rule.amount); }
@@ -77,7 +84,7 @@ namespace SpiritPrototype
         {
             var rule = Rule(index);
             if (rule.effect != RelicEffectKind.AmplifyNextAddition) return Effect(slots[index]);
-            return (index + 1 < Count && Rule(index + 1).id == rule.targetId ? "ACTIVO: " : "INACTIVO: ") + Effect(slots[index]);
+            return (index + 1 < Count && (rule.anyAdditive ? RelicDefinition.IsAdditive(Rule(index + 1).effect) : Rule(index + 1).id == rule.targetId) ? "ACTIVO: " : "INACTIVO: ") + Effect(slots[index]);
         }
     }
 }

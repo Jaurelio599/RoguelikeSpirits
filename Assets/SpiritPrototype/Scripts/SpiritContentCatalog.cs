@@ -17,6 +17,8 @@ namespace SpiritPrototype
             foreach (var s in spirits)
             {
                 if (s == null || string.IsNullOrWhiteSpace(s.id) || s.id != s.id.Trim() || s.id.Contains("|") || !species.Add(s.id)) return "ID de espiritu vacio, duplicado o con el caracter |.";
+                if (s.idleFrames != null && s.idleFrames.Length > 0 && (s.idleFramesPerSecond <= 0 || float.IsNaN(s.idleFramesPerSecond) || float.IsInfinity(s.idleFramesPerSecond))) return "Velocidad de animacion invalida en " + s.id;
+                if (s.idleFrames != null) foreach (var frame in s.idleFrames) if (frame == null) return "Hay un fotograma vacio en " + s.id;
                 if (string.IsNullOrWhiteSpace(s.displayName) || s.mapSize < .1f || float.IsNaN(s.mapSize) || float.IsInfinity(s.mapSize) || s.enemyMaxHealth < 1 || s.enemyMaxHealth > 1000000 || s.enemyAttack < 1 || s.enemyAttack > 1000000 || s.enemyStability < 1 || s.enemyStability > 1000000 ||
                     s.canBeAlly && (s.allyMaxHealth < 1 || s.allyMaxHealth > 1000000 || s.allyDamage < 1 || s.allyDamage > 1000000 || s.attackRupture < 0 || s.attackRupture > 1000000 || s.containment < 0 || s.containment > 1000000) || s.capturable && !s.canBeAlly) return "Atributos invalidos en " + s.id;
             }
@@ -29,17 +31,19 @@ namespace SpiritPrototype
                 if (s.id == "Guardian del Umbral" && (s.canBeAlly || s.capturable || s.spawnInDungeon)) return "El Guardian original debe conservar su rol de jefe no capturable.";
             }
             if (spawns < 2) return "El piso necesita al menos dos especies con Spawn In Dungeon.";
+            var trialKeys = new HashSet<string>();
             foreach (var r in relics)
             {
                 if (r == null || r.id < 0 || items.ContainsKey(r.id) || string.IsNullOrWhiteSpace(r.displayName)) return "ID de reliquia invalido o duplicado.";
+                if (!string.IsNullOrEmpty(r.prototypeKey) && !trialKeys.Add(r.prototypeKey)) return "Clave de reliquia de prueba duplicada: " + r.prototypeKey;
                 if (!Enum.IsDefined(typeof(RelicEffectKind), r.effect) || !Enum.IsDefined(typeof(RelicCondition), r.condition) || r.amount <= 0 || r.amount > 1000000 || float.IsNaN(r.amount) || float.IsInfinity(r.amount)) return "Efecto invalido en reliquia " + r.id;
-                if ((r.effect == RelicEffectKind.ReduceIncomingDamage || r.effect == RelicEffectKind.AddContainment || r.effect == RelicEffectKind.AmplifyNextAddition) && r.condition != RelicCondition.Always) return "El efecto de soporte o vecindad requiere Always: reliquia " + r.id;
-                if ((r.effect == RelicEffectKind.ReduceIncomingDamage || r.effect == RelicEffectKind.AddContainment) && r.amount != (int)r.amount) return "La defensa y contencion usan valores enteros: reliquia " + r.id;
+                if ((r.effect == RelicEffectKind.ReduceIncomingDamage || r.effect == RelicEffectKind.AddContainment || r.effect == RelicEffectKind.AmplifyNextAddition || r.effect == RelicEffectKind.CaptureBonus || r.effect == RelicEffectKind.OpeningShield || r.effect == RelicEffectKind.EndRoundHeal || r.effect == RelicEffectKind.SwitchShield || r.effect == RelicEffectKind.VictoryEssence) && r.condition != RelicCondition.Always) return "El efecto de soporte o vecindad requiere Always: reliquia " + r.id;
+                if ((r.effect == RelicEffectKind.ReduceIncomingDamage || r.effect == RelicEffectKind.AddContainment || r.effect == RelicEffectKind.RuptureBurnedAfterAttack || r.effect == RelicEffectKind.CaptureBonus || r.effect == RelicEffectKind.OpeningShield || r.effect == RelicEffectKind.EndRoundHeal || r.effect == RelicEffectKind.SwitchShield || r.effect == RelicEffectKind.VictoryEssence) && r.amount != (int)r.amount) return "La defensa y contencion usan valores enteros: reliquia " + r.id;
                 items.Add(r.id, r);
             }
             for (int id = 0; id < 7; id++) if (!items.ContainsKey(id)) return "Falta la reliquia original ID " + id;
             foreach (var r in relics)
-                if (r.effect == RelicEffectKind.AmplifyNextAddition && (!items.TryGetValue(r.targetRelicId, out var target) || target.effect != RelicEffectKind.AddAttack)) return "La vecindad debe apuntar a una reliquia AddAttack: ID " + r.id;
+                if (r.effect == RelicEffectKind.AmplifyNextAddition && !r.amplifyAnyAdditive && (!items.TryGetValue(r.targetRelicId, out var target) || !RelicDefinition.IsAdditive(target.effect))) return "La vecindad debe apuntar a una reliquia AddAttack: ID " + r.id;
             return "";
         }
     }

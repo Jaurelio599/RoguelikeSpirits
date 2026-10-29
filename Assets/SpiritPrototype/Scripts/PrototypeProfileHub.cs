@@ -461,7 +461,7 @@ namespace SpiritPrototype
             bool starter = selected == "Ascua";
             GUI.Label(new Rect(375, 170, 490, 40), seen ? PrototypeSpeciesCatalog.Name(selected) : "Espiritu desconocido", title);
             portraits.TryGetValue(selected, out Sprite sprite);
-            if (PrototypeContent.Spirit(selected).sprite != null) sprite = PrototypeContent.Spirit(selected).sprite;
+            if (PrototypeContent.Spirit(selected).FrameAt(Time.unscaledTime) != null) sprite = PrototypeContent.Spirit(selected).FrameAt(Time.unscaledTime);
             if (sprite != null)
             {
                 Color old = GUI.color; if (!seen) GUI.color = Color.black;

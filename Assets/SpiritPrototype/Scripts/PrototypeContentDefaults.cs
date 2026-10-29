@@ -37,6 +37,23 @@ namespace SpiritPrototype
             }
             return r;
         }
+        public static readonly string[] TrialKeys = {"mecha", "campana", "sello", "bastion", "ultimo_farol", "cuerda", "moneda"};
+        public static readonly string[] TrialIcons = {"MechaErrante", "CampanaCeniza", "SelloAgrietado", "BastionAntiguo", "UltimoFarol", "CuerdaRelevo", "MonedaDuelo"};
+        public static RelicDefinition TrialRelic(int index, int id)
+        {
+            var r = ScriptableObject.CreateInstance<RelicDefinition>(); r.id = id; r.prototypeKey = "prototype." + TrialKeys[index];
+            switch (index)
+            {
+                case 0: r.displayName = "Mecha errante"; r.effect = RelicEffectKind.BurnOnAttack; r.condition = RelicCondition.BrasaOnly; r.amount = 1; break;
+                case 1: r.displayName = "Campana de ceniza"; r.effect = RelicEffectKind.RuptureBurnedAfterAttack; r.condition = RelicCondition.BrasaOnly; r.amount = 3; break;
+                case 2: r.displayName = "Sello agrietado"; r.effect = RelicEffectKind.CaptureBonus; r.amount = 10; break;
+                case 3: r.displayName = "Bastion antiguo"; r.effect = RelicEffectKind.OpeningShield; r.amount = 4; break;
+                case 4: r.displayName = "Ultimo farol"; r.effect = RelicEffectKind.EndRoundHeal; r.amount = 2; break;
+                case 5: r.displayName = "Cuerda de relevo"; r.effect = RelicEffectKind.SwitchShield; r.amount = 4; break;
+                default: r.displayName = "Moneda de duelo"; r.effect = RelicEffectKind.VictoryEssence; r.amount = 3; break;
+            }
+            return r;
+        }
         public static SpiritContentCatalog CreateCatalog()
         {
             var c = ScriptableObject.CreateInstance<SpiritContentCatalog>();

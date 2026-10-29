@@ -5455,6 +5455,7 @@ GameObject:
   m_Component:
   - component: {fileID: 289862115}
   - component: {fileID: 289862116}
+  - component: {fileID: 289862117}
   m_Layer: 0
   m_Name: Ascua
   m_TagString: Untagged
@@ -5536,6 +5537,19 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &289862117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289862114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2b22003bd6f384c8d89f2c430ce744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritIdleAnimator
+  definition: {fileID: 11400000, guid: 5ecb8a03803cdff41b381dd0e3034831, type: 2}
 --- !u!1 &304074096
 GameObject:
   m_ObjectHideFlags: 0
@@ -8328,6 +8342,7 @@ GameObject:
   - component: {fileID: 535663734}
   - component: {fileID: 535663735}
   - component: {fileID: 535663736}
+  - component: {fileID: 535663737}
   m_Layer: 0
   m_Name: Velo
   m_TagString: Untagged
@@ -8421,12 +8436,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbca64e1cd3f81243bd8db798a951d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritEncounter
+  definition: {fileID: 0}
   species: Velo
   portrait: {fileID: 21300000, guid: 23e20ea4312c32c43bd5573901d81d76, type: 3}
   maxHealth: 18
   attackDamage: 3
   maxStability: 10
   capturable: 1
+--- !u!114 &535663737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535663733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2b22003bd6f384c8d89f2c430ce744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritIdleAnimator
+  definition: {fileID: 11400000, guid: 5d1c09a8c34780c4aa1c875ec6c79422, type: 2}
 --- !u!1 &554439308
 GameObject:
   m_ObjectHideFlags: 0
@@ -12728,6 +12757,7 @@ GameObject:
   - component: {fileID: 876844913}
   - component: {fileID: 876844912}
   - component: {fileID: 876844911}
+  - component: {fileID: 876844914}
   m_Layer: 0
   m_Name: Guardian del Umbral
   m_TagString: Untagged
@@ -12747,6 +12777,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbca64e1cd3f81243bd8db798a951d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritEncounter
+  definition: {fileID: 0}
   species: Guardian del Umbral
   portrait: {fileID: 21300000, guid: f5890bdf49a0f2f48b9660aeed2ba2d2, type: 3}
   maxHealth: 32
@@ -12827,6 +12858,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 39033120}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &876844914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 876844910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2b22003bd6f384c8d89f2c430ce744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritIdleAnimator
+  definition: {fileID: 11400000, guid: 8992dfade0e389747b9ea953ac032dae, type: 2}
 --- !u!1 &891740439
 GameObject:
   m_ObjectHideFlags: 0
@@ -13233,6 +13277,7 @@ GameObject:
   - component: {fileID: 911086081}
   - component: {fileID: 911086082}
   - component: {fileID: 911086083}
+  - component: {fileID: 911086084}
   m_Layer: 0
   m_Name: Raicero
   m_TagString: Untagged
@@ -13326,12 +13371,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbca64e1cd3f81243bd8db798a951d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritEncounter
+  definition: {fileID: 0}
   species: Raicero
   portrait: {fileID: 21300000, guid: f5890bdf49a0f2f48b9660aeed2ba2d2, type: 3}
   maxHealth: 18
   attackDamage: 3
   maxStability: 10
   capturable: 1
+--- !u!114 &911086084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 911086080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2b22003bd6f384c8d89f2c430ce744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritIdleAnimator
+  definition: {fileID: 11400000, guid: 7c5cd229766bf4247949ecc4da3e86c7, type: 2}
 --- !u!1 &920402253
 GameObject:
   m_ObjectHideFlags: 0
@@ -14849,6 +14908,7 @@ GameObject:
   - component: {fileID: 1022179001}
   - component: {fileID: 1022179002}
   - component: {fileID: 1022179003}
+  - component: {fileID: 1022179004}
   m_Layer: 0
   m_Name: Campanilla
   m_TagString: Untagged
@@ -14942,12 +15002,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbca64e1cd3f81243bd8db798a951d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritEncounter
+  definition: {fileID: 0}
   species: Campanilla
   portrait: {fileID: 21300000, guid: 5fa90779199a22440a43c2eef0d21ba4, type: 3}
   maxHealth: 18
   attackDamage: 3
   maxStability: 10
   capturable: 1
+--- !u!114 &1022179004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1022179000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2b22003bd6f384c8d89f2c430ce744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritIdleAnimator
+  definition: {fileID: 11400000, guid: b49dfda4f2c3d1344aa5a3847a0c81d9, type: 2}
 --- !u!1 &1024424391
 GameObject:
   m_ObjectHideFlags: 0
@@ -17188,6 +17262,7 @@ GameObject:
   - component: {fileID: 1145789833}
   - component: {fileID: 1145789832}
   - component: {fileID: 1145789831}
+  - component: {fileID: 1145789834}
   m_Layer: 0
   m_Name: Player_South
   m_TagString: Untagged
@@ -17357,6 +17432,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &1145789834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145789828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b21017a6a6cbf43b2b05ab620701d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.PlayerSpriteAnimator
+  walkSet: {fileID: 11400000, guid: a540aeace70a6e44aa52a83b109dcbf6, type: 2}
 --- !u!1 &1152866688
 GameObject:
   m_ObjectHideFlags: 0
@@ -20608,6 +20696,7 @@ GameObject:
   - component: {fileID: 1356802727}
   - component: {fileID: 1356802728}
   - component: {fileID: 1356802729}
+  - component: {fileID: 1356802730}
   m_Layer: 0
   m_Name: Farol
   m_TagString: Untagged
@@ -20701,12 +20790,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbca64e1cd3f81243bd8db798a951d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritEncounter
+  definition: {fileID: 0}
   species: Farol
   portrait: {fileID: 21300000, guid: d1fb4d60b8cd11a489aa72c32481aa10, type: 3}
   maxHealth: 18
   attackDamage: 3
   maxStability: 10
   capturable: 1
+--- !u!114 &1356802730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356802726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2b22003bd6f384c8d89f2c430ce744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritIdleAnimator
+  definition: {fileID: 11400000, guid: fbf89f023d05c0341b5288e16d6fea04, type: 2}
 --- !u!1 &1356978475
 GameObject:
   m_ObjectHideFlags: 0
@@ -25243,6 +25346,7 @@ GameObject:
   - component: {fileID: 1707506734}
   - component: {fileID: 1707506733}
   - component: {fileID: 1707506736}
+  - component: {fileID: 1707506737}
   m_Layer: 0
   m_Name: Explorador del refugio
   m_TagString: Untagged
@@ -25412,6 +25516,19 @@ MonoBehaviour:
   speed: 3
   south: {fileID: 21300000, guid: 221e53d114d7e5e4ea33f9f7af5888d1, type: 3}
   north: {fileID: 21300000, guid: 63e942f4bcc45b540b5257440de0c554, type: 3}
+--- !u!114 &1707506737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1707506731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b21017a6a6cbf43b2b05ab620701d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.PlayerSpriteAnimator
+  walkSet: {fileID: 11400000, guid: a540aeace70a6e44aa52a83b109dcbf6, type: 2}
 --- !u!1 &1713704707
 GameObject:
   m_ObjectHideFlags: 0
@@ -26474,6 +26591,7 @@ GameObject:
   - component: {fileID: 1794939706}
   - component: {fileID: 1794939707}
   - component: {fileID: 1794939708}
+  - component: {fileID: 1794939709}
   m_Layer: 0
   m_Name: Luto
   m_TagString: Untagged
@@ -26567,12 +26685,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbca64e1cd3f81243bd8db798a951d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritEncounter
+  definition: {fileID: 0}
   species: Luto
   portrait: {fileID: 21300000, guid: 5aab402bd843b6741a90d5f3dbc5526f, type: 3}
   maxHealth: 18
   attackDamage: 3
   maxStability: 10
   capturable: 1
+--- !u!114 &1794939709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1794939705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2b22003bd6f384c8d89f2c430ce744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritIdleAnimator
+  definition: {fileID: 11400000, guid: 361509d14274ef4489912276dc646de5, type: 2}
 --- !u!1 &1796181009
 GameObject:
   m_ObjectHideFlags: 0

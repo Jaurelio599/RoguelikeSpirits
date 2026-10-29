@@ -14,11 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.RelicDefinition
   id: 6
   displayName: Medallon del alba
-  icon: {fileID: 0}
+  prototypeKey: 
+  icon: {fileID: 21300000, guid: 0cf854090d06394469d26a4cc5f89800, type: 3}
   rarity: Por definir
   inChests: 1
   effect: 0
   condition: 3
   amount: 3
   targetRelicId: 0
+  amplifyAnyAdditive: 0
   flavorText: 

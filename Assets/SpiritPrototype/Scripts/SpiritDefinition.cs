@@ -10,6 +10,14 @@ namespace SpiritPrototype
         public string displayName;
         public Sprite sprite;
         public Color tint = Color.white;
+        public Sprite[] idleFrames = new Sprite[0];
+        [Min(.1f)] public float idleFramesPerSecond = 5;
+        public Sprite FrameAt(float time)
+        {
+            if (idleFrames == null || idleFrames.Length == 0) return sprite;
+            int index = (int)((System.Math.Max(0, time) * idleFramesPerSecond) % idleFrames.Length);
+            return idleFrames[index] != null ? idleFrames[index] : sprite;
+        }
         public string rarity = "Por definir";
         [Min(.1f)] public float mapSize = .9f;
         [Header("Aliado")]
