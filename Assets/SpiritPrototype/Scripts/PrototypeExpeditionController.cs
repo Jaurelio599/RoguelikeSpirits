@@ -292,6 +292,8 @@ namespace SpiritPrototype
 #endif
         }
 
+        private readonly Vector2[] rewardScroll = new Vector2[3];
+
         private void DrawReward()
         {
             GUI.DrawTexture(new Rect(40, 100, 880, 450), panel);
@@ -299,11 +301,16 @@ namespace SpiritPrototype
             if (rewardChoice >= 0)
             {
                 var selected = chestReward.Options[rewardChoice];
-                GUI.Label(new Rect(65, 170, 830, 50), "Recibiras: " + PrototypeRelicLine.Name(selected) + ". El reemplazo conserva su posicion.", text);
+                controller.DrawRelicIcon(selected, new Rect(65, 170, 52, 52));
+                GUI.Label(new Rect(130, 170, 750, 50), "Recibiras: " + PrototypeRelicLine.Name(selected) + ". Elige una ranura; conserva su posicion.", text);
                 for (int i = 0; i < controller.Relics.Count; i++)
                 {
-                    if (GUI.Button(new Rect(80, 225 + i * 46, 800, 40), (i + 1) + ". " +
-                        PrototypeRelicLine.Name(controller.Relics[i]), button))
+                    float x = 65 + i * 166;
+                    GUI.Box(new Rect(x, 235, 156, 235), GUIContent.none);
+                    GUI.Label(new Rect(x + 10, 242, 136, 25), "Ranura " + (i + 1), text);
+                    controller.DrawRelicIcon(controller.Relics[i], new Rect(x + 40, 277, 76, 76));
+                    GUI.Label(new Rect(x + 10, 360, 136, 55), PrototypeRelicLine.Name(controller.Relics[i]), text);
+                    if (GUI.Button(new Rect(x + 10, 421, 136, 38), "Reemplazar", button))
                     {
                         if (chestReward.Claim(controller.Relics, rewardChoice, i)) CloseReward();
                         return;
@@ -318,10 +325,14 @@ namespace SpiritPrototype
                 {
                     var relic = chestReward.Options[i];
                     float x = 65 + i * 280;
-                    GUI.Box(new Rect(x, 225, 270, 240), GUIContent.none);
-                    GUI.Label(new Rect(x + 12, 238, 246, 55), PrototypeRelicLine.Name(relic), new GUIStyle(text) {fontSize = 22});
-                    GUI.Label(new Rect(x + 12, 300, 246, 100), PrototypeRelicLine.Effect(relic), text);
-                    if (GUI.Button(new Rect(x + 15, 410, 240, 40), "Elegir", button))
+                    GUI.Box(new Rect(x, 220, 270, 260), GUIContent.none);
+                    controller.DrawRelicIcon(relic, new Rect(x + 20, 232, 64, 64));
+                    GUI.Label(new Rect(x + 95, 235, 162, 62), PrototypeRelicLine.Name(relic), new GUIStyle(text) {fontSize = 22});
+                    string effect = PrototypeRelicLine.Effect(relic);
+                    float height = Mathf.Max(95, text.CalcHeight(new GUIContent(effect), 220));
+                    rewardScroll[i] = GUI.BeginScrollView(new Rect(x + 12, 307, 246, 105), rewardScroll[i], new Rect(0, 0, 220, height));
+                    GUI.Label(new Rect(0, 0, 220, height), effect, text); GUI.EndScrollView();
+                    if (GUI.Button(new Rect(x + 15, 428, 240, 40), "Elegir", button))
                     {
                         if (controller.Relics.Count >= 5) rewardChoice = i;
                         else if (chestReward.Claim(controller.Relics, i)) CloseReward();

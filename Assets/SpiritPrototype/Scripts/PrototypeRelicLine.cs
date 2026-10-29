@@ -58,6 +58,12 @@ namespace SpiritPrototype
             int next = index + direction; if (next < 0 || next >= Count) return false;
             var value = slots[index]; slots[index] = slots[next]; slots[next] = value; return true;
         }
+        // Insert at the requested position; keep all other relics in relative order.
+        public bool MoveTo(int from, int to)
+        {
+            if (frozen != null || from < 0 || from >= Count || to < 0 || to >= Count || from == to) return false;
+            var value = slots[from]; slots.RemoveAt(from); slots.Insert(to, value); return true;
+        }
         public int Damage(int baseDamage, bool brasa, int enemyHealth, int enemyMaxHealth, out string trace)
         {
             double value = Math.Max(1, baseDamage); var log = new StringBuilder("Base " + baseDamage);

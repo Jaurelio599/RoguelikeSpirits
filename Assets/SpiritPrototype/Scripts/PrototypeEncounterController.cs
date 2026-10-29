@@ -23,6 +23,16 @@ namespace SpiritPrototype
         private int activeIndex, seals = 6;
         private bool teamOpen, forcedReplacement, movementBlocked;
         private bool relicOpen;
+        private int draggedRelic = -1, relicDragControl, selectedRelic;
+        private Vector2 relicDetailScroll;
+        private static Rect RelicSlot(int index) => new Rect(65 + index * 166, 195, 156, 170);
+        private void CancelRelicDrag()
+        {
+            if (relicDragControl != 0 && GUIUtility.hotControl == relicDragControl) GUIUtility.hotControl = 0;
+            draggedRelic = -1; relicDragControl = 0;
+        }
+        private void OnApplicationFocus(bool focused) { if (!focused) CancelRelicDrag(); }
+
         private PrototypeRelicLine relics; // Catalog assets must load in Start, never in a MonoBehaviour initializer.
         private bool debugOverlay, debugTestEncounter;
         public bool DebugEnabled { get; set; }
@@ -183,7 +193,7 @@ namespace SpiritPrototype
         }
 
         private void CloseRelics()
-        { relicOpen = false; MenuClosedFrame = Time.frameCount; if (battle == null && !teamOpen) UnblockMovement(); StateChanged?.Invoke(); }
+        { CancelRelicDrag(); relicOpen = false; MenuClosedFrame = Time.frameCount; if (battle == null && !teamOpen) UnblockMovement(); StateChanged?.Invoke(); }
 
         private void CloseTeam()
         {
@@ -277,6 +287,7 @@ namespace SpiritPrototype
 
         public void Restore(PrototypeRunSave state)
         {
+            CancelRelicDrag();
             CleanupDebugOpponent();
             battle = null; target = null; nearby = null;
             teamOpen = false; relicOpen = false; forcedReplacement = false;
@@ -402,6 +413,7 @@ namespace SpiritPrototype
 
         private void OnDisable()
         {
+            CancelRelicDrag();
             if (player != null) UnblockMovement();
         }
 
@@ -552,27 +564,64 @@ namespace SpiritPrototype
             }
         }
 
+        public void DrawRelicIcon(PrototypeRelic relic, Rect rect)
+        { Styles(); RelicPortrait(relic, rect); }
+
         private void DrawRelics()
         {
             GUI.DrawTexture(new Rect(40, 70, 880, 510), background);
             GUI.Label(new Rect(65, 90, 820, 45), "Ordena tus reliquias", title);
-            GUI.Label(new Rect(65, 140, 820, 45), "Se calculan de izquierda a derecha. La fila se bloquea al combatir.", small);
-            for (int i = 0; i < relics.Count; i++)
+            GUI.Label(new Rect(65, 140, 820, 45), "Arrastra una reliquia a otra ranura. Efectos de izquierda a derecha. Solo fuera del combate.", small);
+            int control = GUIUtility.GetControlID(FocusType.Passive);
+            Event evt = Event.current;
+            int hovered = -1;
+            for (int i = 0; i < 5; i++) if (RelicSlot(i).Contains(evt.mousePosition)) hovered = i;
+            if (GUI.enabled && evt.type == EventType.MouseDown && evt.button == 0 && hovered >= 0 && hovered < relics.Count)
             {
-                float y = 183 + i * 62;
-                RelicPortrait(relics[i], new Rect(65, y, 42, 42));
-                GUI.Label(new Rect(135, y, 540, 27), (i + 1) + ". " + PrototypeRelicLine.Name(relics[i]), label);
-                GUI.Label(new Rect(135, y + 25, 555, 36), relics.Description(i), small);
-                bool previous = GUI.enabled;
-                GUI.enabled = previous && i > 0;
-                if (GUI.Button(new Rect(715, y + 3, 65, 40), "<", button)) { relics.Move(i, -1); StateChanged?.Invoke(); GUI.enabled = previous; break; }
-                GUI.enabled = previous && i + 1 < relics.Count;
-                if (GUI.Button(new Rect(795, y + 3, 65, 40), ">", button)) { relics.Move(i, 1); StateChanged?.Invoke(); GUI.enabled = previous; break; }
-                GUI.enabled = previous;
+                selectedRelic = draggedRelic = hovered;
+                relicDetailScroll = Vector2.zero;
+                relicDragControl = control; GUIUtility.hotControl = control; evt.Use();
+            }
+            if (draggedRelic >= 0 && GUIUtility.hotControl == control)
+            {
+                if (evt.type == EventType.MouseDrag) evt.Use();
+                if (evt.type == EventType.MouseUp && evt.button == 0)
+                {
+                    // Empty slots mean move to the end; dropping outside the row cancels.
+                    if (GUI.enabled && hovered >= 0 && relics.MoveTo(draggedRelic, System.Math.Min(hovered, relics.Count - 1)))
+                    { selectedRelic = System.Math.Min(hovered, relics.Count - 1); StateChanged?.Invoke(); }
+                    CancelRelicDrag(); evt.Use();
+                }
+            }
+            var cardName = new GUIStyle(small) {fontSize = 16};
+            for (int i = 0; i < 5; i++)
+            {
+                Rect slot = RelicSlot(i);
+                Color old = GUI.color;
+                if (i == hovered || (hovered < 0 && i == selectedRelic)) GUI.color = new Color(.55f, .9f, 1f);
+                GUI.Box(slot, GUIContent.none); GUI.color = old;
+                GUI.Label(new Rect(slot.x + 10, slot.y + 8, 135, 24), "Ranura " + (i + 1), small);
+                if (i < relics.Count)
+                {
+                    RelicPortrait(relics[i], new Rect(slot.x + 40, slot.y + 34, 76, 76));
+                    GUI.Label(new Rect(slot.x + 10, slot.y + 115, 136, 50), PrototypeRelicLine.Name(relics[i]), cardName);
+                }
+                else GUI.Label(new Rect(slot.x + 25, slot.y + 75, 110, 30), "Vacia", small);
+            }
+            int detail = hovered >= 0 && hovered < relics.Count ? hovered : selectedRelic;
+            if (detail >= 0 && detail < relics.Count)
+            {
+                GUI.Label(new Rect(65, 375, 820, 28), PrototypeRelicLine.Name(relics[detail]), label);
+                string description = relics.Description(detail);
+                float height = Mathf.Max(65, small.CalcHeight(new GUIContent(description), 785));
+                relicDetailScroll = GUI.BeginScrollView(new Rect(65, 408, 820, 78), relicDetailScroll, new Rect(0, 0, 785, height));
+                GUI.Label(new Rect(0, 0, 785, height), description, small); GUI.EndScrollView();
             }
             relics.Damage(10, true, 4, 20, out string example);
-            GUI.Label(new Rect(65, 503, 820, 26), "Ejemplo Brasa contra enemigo herido: " + example, small);
+            GUI.Label(new Rect(65, 493, 820, 38), "Ejemplo Brasa contra enemigo herido: " + example, small);
             if (GUI.Button(new Rect(600, 539, 260, 30), "Esc / R - Volver", button)) CloseRelics();
+            if (draggedRelic >= 0 && draggedRelic < relics.Count)
+                RelicPortrait(relics[draggedRelic], new Rect(evt.mousePosition.x - 32, evt.mousePosition.y - 32, 64, 64));
         }
 
         private void DrawTeam()
