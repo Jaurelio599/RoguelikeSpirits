@@ -37,6 +37,7 @@ namespace SpiritPrototype
             get { relics.Damage(AttackDamage, brasa, EnemyHealth, EnemyMaxHealth, out string trace); return trace; }
         }
 
+        public int PredictedContainment => ContainRupture + relics.ContainmentBonus;
         public bool Exposed => Stability == 0 && Round <= exposedThroughRound;
         public int CaptureChance => Math.Min(95, 60 + (EnemyHealth * 2 <= EnemyMaxHealth ? 15 : 0));
 
@@ -84,7 +85,7 @@ namespace SpiritPrototype
                     damage = relics.Damage(AttackDamage, brasa, EnemyHealth, EnemyMaxHealth, out string calculation);
                     LastCalculation = calculation;
                 }
-                int rupture = action == PrototypeAction.Attack ? AttackRupture : ContainRupture;
+                int rupture = action == PrototypeAction.Attack ? AttackRupture : PredictedContainment;
                 EnemyHealth = Math.Max(0, EnemyHealth - damage);
                 if (Stability > 0)
                 {
@@ -127,6 +128,33 @@ namespace SpiritPrototype
             return true;
         }
 
+        // Test controls do not advance rounds or trigger a response.
+        public bool DebugResolve(bool capture, bool teamHasRoom)
+        {
+            if (Outcome != PrototypeOutcome.Ongoing || capture && (!Capturable || !teamHasRoom)) return false;
+            if (capture) { EnemyHealth = Math.Max(1, EnemyHealth); Outcome = PrototypeOutcome.Captured; }
+            else { EnemyHealth = 0; Outcome = PrototypeOutcome.Victory; }
+            Message = capture ? "DEBUG: captura inmediata, sin gastar sello." : "DEBUG: victoria inmediata.";
+            return true;
+        }
+        public void DebugHeal()
+        {
+            AllyHealth = ActiveMaxHealth;
+            if (Outcome == PrototypeOutcome.Defeat) Outcome = PrototypeOutcome.Ongoing;
+        }
+        public void DebugSeals(int amount) { Seals += Math.Max(0, amount); }
+        public void DebugExpose()
+        {
+            if (Outcome != PrototypeOutcome.Ongoing) return;
+            Stability = 0; exposedThroughRound = Round + 1;
+        }
+        public void DebugEnemy(bool expose, bool wounded)
+        {
+            if (Outcome != PrototypeOutcome.Ongoing) return;
+            EnemyHealth = wounded ? Math.Max(1, EnemyMaxHealth * 2 / 5) : EnemyMaxHealth;
+            if (expose) { Stability = 0; exposedThroughRound = Round + 1; }
+        }
+
         private void SetAlly(int health, int maxHealth, int damage, int rupture, int contain)
         {
             ActiveMaxHealth = Math.Max(1, maxHealth);
@@ -138,7 +166,7 @@ namespace SpiritPrototype
 
         private void ResolveEnemy(bool defend)
         {
-            int incoming = staggerPending ? 0 : defend ? (enemyAttack + 1) / 2 : enemyAttack;
+            int incoming = staggerPending ? 0 : relics.IncomingDamage(defend ? (enemyAttack + 1) / 2 : enemyAttack);
             if (staggerPending) Message += " Rompes su guardia: pierde esta respuesta.";
             else Message += " El enemigo causa " + incoming + " de dano.";
             staggerPending = false;

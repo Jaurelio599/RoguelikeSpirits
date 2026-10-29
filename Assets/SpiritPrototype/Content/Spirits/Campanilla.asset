@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c218d22b2905f804da79ec9d1b5bf969, type: 3}
+  m_Name: Campanilla
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritDefinition
+  id: Campanilla
+  displayName: Campanilla
+  sprite: {fileID: 21300000, guid: 5fa90779199a22440a43c2eef0d21ba4, type: 3}
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  rarity: Por definir
+  mapSize: 0.9
+  canBeAlly: 1
+  allyMaxHealth: 18
+  allyDamage: 3
+  attackRupture: 2
+  containment: 5
+  usesBrasa: 0
+  spawnInDungeon: 1
+  capturable: 1
+  enemyMaxHealth: 18
+  enemyAttack: 3
+  enemyStability: 10

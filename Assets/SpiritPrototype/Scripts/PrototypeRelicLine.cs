@@ -4,78 +4,80 @@ using System.Text;
 
 namespace SpiritPrototype
 {
-    public enum PrototypeRelic { Carbon, Lens, Prism }
-
-    // The ordered line and damage arithmetic are independent of Unity.
+    // Retain the original numeric aliases for compatibility; new IDs come from assets.
+    public enum PrototypeRelic { Carbon = 0, Lens = 1, Prism = 2, Edge = 3, Shell = 4, Knot = 5, Dawn = 6 }
     public sealed class PrototypeRelicLine
     {
-        private readonly PrototypeRelic[] slots;
-        public int Count => slots.Length;
+        private readonly List<PrototypeRelic> slots;
+        private Dictionary<int, PrototypeRelicRule> frozen;
+        public int Count => slots.Count;
         public PrototypeRelic this[int index] => slots[index];
-
         public PrototypeRelicLine() : this(new[] {PrototypeRelic.Carbon, PrototypeRelic.Lens, PrototypeRelic.Prism}) { }
         public PrototypeRelicLine(IEnumerable<PrototypeRelic> values)
         {
-            var list = new List<PrototypeRelic>(values);
-            if (list.Count > 5 || new HashSet<PrototypeRelic>(list).Count != list.Count)
-                throw new ArgumentException("La fila admite cinco reliquias diferentes.");
-            slots = list.ToArray();
+            slots = new List<PrototypeRelic>(values);
+            if (slots.Count > 5 || new HashSet<PrototypeRelic>(slots).Count != slots.Count) throw new ArgumentException("La fila admite cinco reliquias diferentes.");
+            foreach (var id in slots) if (!PrototypeContent.KnownRelic((int)id)) throw new ArgumentException("Reliquia desconocida: " + (int)id);
         }
-
-        public PrototypeRelicLine Snapshot() { return new PrototypeRelicLine(slots); }
-
+        private PrototypeRelicRule Rule(int index) => frozen != null ? frozen[(int)slots[index]] : PrototypeContent.Relic((int)slots[index]).Rule;
+        public bool Contains(PrototypeRelic value) => slots.Contains(value);
+        public bool Acquire(PrototypeRelic value, int replaceIndex = -1)
+        {
+            if (frozen != null || !PrototypeContent.KnownRelic((int)value) || Contains(value)) return false;
+            if (Count < 5) { slots.Add(value); return true; }
+            if (replaceIndex < 0 || replaceIndex >= Count) return false;
+            slots[replaceIndex] = value; return true;
+        }
+        public int ContainmentBonus
+        {
+            get { int bonus = 0; for (int i = 0; i < Count; i++) { var r = Rule(i); if (r.effect == RelicEffectKind.AddContainment) bonus += (int)r.amount; } return bonus; }
+        }
+        public int IncomingDamage(int damage)
+        {
+            int reduction = 0;
+            for (int i = 0; i < Count; i++) { var r = Rule(i); if (r.effect == RelicEffectKind.ReduceIncomingDamage) reduction += (int)r.amount; }
+            return Math.Max(1, damage - reduction);
+        }
+        public PrototypeRelicLine Snapshot()
+        {
+            var copy = new PrototypeRelicLine(slots) {frozen = new Dictionary<int, PrototypeRelicRule>()};
+            for (int i = 0; i < Count; i++) copy.frozen.Add((int)slots[i], Rule(i));
+            return copy;
+        }
         public bool Move(int index, int direction)
         {
-            if (Math.Abs(direction) != 1 || index < 0 || index >= Count) return false;
-            int next = index + direction;
-            if (next < 0 || next >= Count) return false;
-            PrototypeRelic value = slots[index]; slots[index] = slots[next]; slots[next] = value;
-            return true;
+            if (frozen != null || Math.Abs(direction) != 1 || index < 0 || index >= Count) return false;
+            int next = index + direction; if (next < 0 || next >= Count) return false;
+            var value = slots[index]; slots[index] = slots[next]; slots[next] = value; return true;
         }
-
         public int Damage(int baseDamage, bool brasa, int enemyHealth, int enemyMaxHealth, out string trace)
         {
-            double value = Math.Max(1, baseDamage);
-            var log = new StringBuilder("Base " + baseDamage);
+            double value = Math.Max(1, baseDamage); var log = new StringBuilder("Base " + baseDamage);
             for (int i = 0; i < Count; i++)
             {
-                if (slots[i] == PrototypeRelic.Carbon && brasa)
+                var rule = Rule(i); if (!rule.Matches(brasa, enemyHealth, enemyMaxHealth)) continue;
+                if (rule.effect == RelicEffectKind.AddAttack)
                 {
-                    int bonus = i > 0 && slots[i - 1] == PrototypeRelic.Prism ? 8 : 4;
-                    value += bonus;
-                    log.Append(" > Carbon +" + bonus);
+                    double bonus = rule.amount;
+                    if (i > 0) { var previous = Rule(i - 1); if (previous.effect == RelicEffectKind.AmplifyNextAddition && previous.targetId == rule.id) bonus *= previous.amount; }
+                    value += bonus; log.Append(" > " + rule.name + " +" + bonus);
                 }
-                else if (slots[i] == PrototypeRelic.Lens && enemyHealth * 2 < enemyMaxHealth)
-                { value *= 1.5; log.Append(" > Lente x1.5"); }
+                else if (rule.effect == RelicEffectKind.MultiplyAttack) { value *= rule.amount; log.Append(" > " + rule.name + " x" + rule.amount); }
             }
-            int result = Math.Max(1, (int)Math.Floor(value));
-            trace = log.Append(" = " + result).ToString();
-            return result;
+            int result = (int)Math.Max(1, Math.Min(int.MaxValue, Math.Floor(value)));
+            trace = log.Append(" = " + result).ToString(); return result;
         }
-
-        public static string Name(PrototypeRelic value)
+        public static string Name(PrototypeRelic value) => PrototypeContent.Relic((int)value).displayName;
+        public static string Effect(PrototypeRelic value)
         {
-            switch (value)
-            {
-                case PrototypeRelic.Carbon: return "Carbon tallado";
-                case PrototypeRelic.Lens: return "Lente voraz";
-                default: return "Prisma vecino";
-            }
+            var definition = PrototypeContent.Relic((int)value);
+            return definition.RuleText + (string.IsNullOrWhiteSpace(definition.flavorText) ? "" : " " + definition.flavorText);
         }
-
         public string Description(int index)
         {
-            switch (slots[index])
-            {
-                case PrototypeRelic.Carbon:
-                    return "Suma 4 al ataque de Brasa. Ascua y Farol usan Brasa.";
-                case PrototypeRelic.Lens:
-                    return "Multiplica x1.5 si el enemigo esta por debajo de media vida.";
-                default:
-                    return index + 1 < Count && slots[index + 1] == PrototypeRelic.Carbon
-                        ? "ACTIVO: duplica el +4 del Carbon inmediatamente a su derecha."
-                        : "INACTIVO: necesita Carbon inmediatamente a su derecha.";
-            }
+            var rule = Rule(index);
+            if (rule.effect != RelicEffectKind.AmplifyNextAddition) return Effect(slots[index]);
+            return (index + 1 < Count && Rule(index + 1).id == rule.targetId ? "ACTIVO: " : "INACTIVO: ") + Effect(slots[index]);
         }
     }
 }

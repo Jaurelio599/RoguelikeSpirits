@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a8439795f8cee14792f0693e67f8d92, type: 3}
+  m_Name: ContentCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritContentCatalog
+  spirits:
+  - {fileID: 11400000, guid: 5ecb8a03803cdff41b381dd0e3034831, type: 2}
+  - {fileID: 11400000, guid: 5d1c09a8c34780c4aa1c875ec6c79422, type: 2}
+  - {fileID: 11400000, guid: 7c5cd229766bf4247949ecc4da3e86c7, type: 2}
+  - {fileID: 11400000, guid: b49dfda4f2c3d1344aa5a3847a0c81d9, type: 2}
+  - {fileID: 11400000, guid: 361509d14274ef4489912276dc646de5, type: 2}
+  - {fileID: 11400000, guid: fbf89f023d05c0341b5288e16d6fea04, type: 2}
+  - {fileID: 11400000, guid: 8992dfade0e389747b9ea953ac032dae, type: 2}
+  relics:
+  - {fileID: 11400000, guid: 3970a2a66771d7f45bcc8a04ee04d6f3, type: 2}
+  - {fileID: 11400000, guid: 2b519163a0c33bd4f9b705d1803c29c7, type: 2}
+  - {fileID: 11400000, guid: 2bcb6a93e007a024caf07c29a8adcc55, type: 2}
+  - {fileID: 11400000, guid: 6a068a8e383185a44b00d9aa516f97ab, type: 2}
+  - {fileID: 11400000, guid: 8c1aa8c1b39630d45af880074fba3f25, type: 2}
+  - {fileID: 11400000, guid: 602dbb654c0230245ae27ca4a0c09457, type: 2}
+  - {fileID: 11400000, guid: 53f40c0c8a477c645b9ed8adbe1177e3, type: 2}

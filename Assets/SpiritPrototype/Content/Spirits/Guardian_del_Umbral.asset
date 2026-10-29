@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c218d22b2905f804da79ec9d1b5bf969, type: 3}
+  m_Name: Guardian_del_Umbral
+  m_EditorClassIdentifier: Assembly-CSharp::SpiritPrototype.SpiritDefinition
+  id: Guardian del Umbral
+  displayName: Guardian del Umbral
+  sprite: {fileID: 21300000, guid: f5890bdf49a0f2f48b9660aeed2ba2d2, type: 3}
+  tint: {r: 1, g: 0.65, b: 0.65, a: 1}
+  rarity: Jefe (provisional)
+  mapSize: 1.2
+  canBeAlly: 0
+  allyMaxHealth: 20
+  allyDamage: 5
+  attackRupture: 2
+  containment: 5
+  usesBrasa: 0
+  spawnInDungeon: 0
+  capturable: 0
+  enemyMaxHealth: 32
+  enemyAttack: 4
+  enemyStability: 20
